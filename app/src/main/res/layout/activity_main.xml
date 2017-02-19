@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.example.kenedi.feedyoself.MainActivity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/ll">
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="40dp">
+
+                <TextView
+                    android:text="This Week"
+                    android:layout_width="185dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/thisWeek"
+                    android:textSize="36sp" />
+
+                <TextView
+                    android:text="Go To Map"
+                    android:layout_width="wrap_content"
+                    android:id="@+id/textView4"
+                    android:layout_row="0"
+                    android:layout_column="1"
+                    android:layout_gravity="right"
+                    android:gravity="right"
+                    android:layout_height="50dp"
+                    android:layout_weight="1" />
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="35dp"
+                    app:srcCompat="@android:drawable/ic_dialog_map"
+                    android:id="@+id/imageButton"
+                    android:layout_row="0"
+                    android:layout_column="17"
+                    android:onClick="sendMessage"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>
