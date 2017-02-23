@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         //ScrollView mainView = (ScrollView) findViewById(R.id.scroll);
         LinearLayout mainLayout = (LinearLayout) findViewById(R.id.ll);
@@ -64,6 +65,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void sendMessage(View view){
         Intent intent = new Intent(MainActivity.this, FeedYoSelfMap.class);
+        startActivity(intent);
+    }
+
+    public void sendMessage2(View view){
+        Intent intent = new Intent(MainActivity.this, FeedYoSelfLogIn.class);
         startActivity(intent);
     }
 }
