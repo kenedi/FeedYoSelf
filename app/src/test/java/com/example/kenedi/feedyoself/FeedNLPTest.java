@@ -43,11 +43,11 @@ public class FeedNLPTest {
         assertNull(FeedNLP.extractLocation(emailSimpleNo));
     }
 
-//    @Test
-//    public void extractDate_simpleYes() {
-//        Date date = FeedNLP.extractDate(emailSimpleYes);
-//        assertNotNull(date);
-//    }
+    @Test
+    public void extractDate_simpleYes() {
+        Date date = FeedNLP.extractDate(emailSimpleYes);
+        assertNotNull(date);
+    }
 
     @Test
     public void extractDate_simpleNo() {
@@ -60,10 +60,4 @@ public class FeedNLPTest {
         assertNotNull(foodEvent);
     }
 
-    @Test
-    public void SUTimeDemoTest() {
-        SUTimeDemo demo = new SUTimeDemo();
-        String[] args = {emailSimpleYes, emailSimpleNo};
-        demo.test(args);
-    }
 }
