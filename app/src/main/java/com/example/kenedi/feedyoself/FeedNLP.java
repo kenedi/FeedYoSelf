@@ -47,7 +47,9 @@ public class FeedNLP {
             "pizza",
             "refreshment",
             "snack",
-            "supper"
+            "supper",
+            "donut",
+            "coffee"
     };
 
     private static Set<String> FOOD_SET = new HashSet<>(Arrays.asList(FOOD_STRINGS));
