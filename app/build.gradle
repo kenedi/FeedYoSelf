@@ -28,5 +28,5 @@ dependencies {
     compile 'com.google.android.gms:play-services:10.0.1'
     testCompile 'junit:junit:4.12'
     compile 'edu.stanford.nlp:stanford-corenlp:3.7.0'
-    compile 'nz.ac.waikato.cms.weka:weka-stable:3.8.0'
+    compile 'edu.stanford.nlp:stanford-corenlp:3.7.0:models'
 }
