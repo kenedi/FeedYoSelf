@@ -5,6 +5,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -25,6 +26,7 @@ import edu.stanford.nlp.time.TimeAnnotations;
 import edu.stanford.nlp.time.TimeAnnotator;
 import edu.stanford.nlp.time.TimeExpression;
 import edu.stanford.nlp.util.CoreMap;
+import edu.stanford.nlp.util.StringUtils;
 
 /**
  * Created by nicholasbradford on 2/22/17.
@@ -85,77 +87,76 @@ public class FeedNLP {
 //        inSb.setLength(0);
     }
 
+
+//    //I don't know why I can't get this code out of the box from StanfordNLP, multi-token entities
+//    //are far more interesting and useful..
+//    //TODO make this code simpler..
+//    for (CoreMap sentence : sentences) {
+//        // traversing the words in the current sentence, "O" is a sensible default to initialise
+//        // tokens to since we're not interested in unclassified / unknown things..
+//        String prevNeToken = "O";
+//        String currNeToken = "O";
+//        boolean newToken = true;
+//        for (CoreLabel token : sentence.get(CoreAnnotations.TokensAnnotation.class)) {
+//            currNeToken = token.get(CoreAnnotations.NamedEntityTagAnnotation.class);
+//            String word = token.get(CoreAnnotations.TextAnnotation.class);
+//            // Strip out "O"s completely, makes code below easier to understand
+//            if (currNeToken.equals("O")) {
+//                // LOG.debug("Skipping '{}' classified as {}", word, currNeToken);
+//                if (!prevNeToken.equals("O") && (sb.length() > 0)) {
+//                    handleEntity(prevNeToken, sb, tokens);
+//                    newToken = true;
+//                }
+//                continue;
+//            }
+//
+//            if (newToken) {
+//                prevNeToken = currNeToken;
+//                newToken = false;
+//                sb.append(word);
+//                continue;
+//            }
+//
+//            if (currNeToken.equals(prevNeToken)) {
+//                sb.append(" " + word);
+//            } else {
+//                // We're done with the current entity - print it out and reset
+//                // TODO save this token into an appropriate ADT to return for useful processing..
+//                handleEntity(prevNeToken, sb, tokens);
+//                newToken = true;
+//            }
+//            prevNeToken = currNeToken;
+//            if (answer == null) {
+//                answer = prevNeToken;
+//            }
+//        }
+//    }
+
     /**
      * Inspired by http://www.informit.com/articles/article.aspx?p=2265404
      * @param text
      * @return
      */
     static String extractLocation(String text) {
-        List tokens = new ArrayList<>();
-
-        // creates a StanfordCoreNLP object, with POS tagging, lemmatization, NER, parsing, and
         Properties props = new Properties();
-        boolean useRegexner = false;
-        if (useRegexner) {
-            props.put("annotators", "tokenize, ssplit, pos, lemma, ner, regexner");
-            props.put("regexner.mapping", "locations.txt");
-        } else {
-            props.put("annotators", "tokenize, ssplit, pos, lemma, ner");
-        }
+        props.put("annotators", "tokenize, ssplit, pos, lemma, ner");
         StanfordCoreNLP pipeline = new StanfordCoreNLP(props);
-
-
-        // run all Annotators on the passed-in text
         Annotation document = new Annotation(text);
         pipeline.annotate(document);
-
-        // these are all the sentences in this document
-        // a CoreMap is essentially a Map that uses class objects as keys and has values with
-        // custom types
         List<CoreMap> sentences = document.get(CoreAnnotations.SentencesAnnotation.class);
-        StringBuilder sb = new StringBuilder();
-
-        //I don't know why I can't get this code out of the box from StanfordNLP, multi-token entities
-        //are far more interesting and useful..
-        //TODO make this code simpler..
+        List<String> answer = new ArrayList<>();
         for (CoreMap sentence : sentences) {
-            // traversing the words in the current sentence, "O" is a sensible default to initialise
-            // tokens to since we're not interested in unclassified / unknown things..
-            String prevNeToken = "O";
-            String currNeToken = "O";
-            boolean newToken = true;
+            String currNeToken;
             for (CoreLabel token : sentence.get(CoreAnnotations.TokensAnnotation.class)) {
                 currNeToken = token.get(CoreAnnotations.NamedEntityTagAnnotation.class);
                 String word = token.get(CoreAnnotations.TextAnnotation.class);
-                // Strip out "O"s completely, makes code below easier to understand
-                if (currNeToken.equals("O")) {
-                    // LOG.debug("Skipping '{}' classified as {}", word, currNeToken);
-                    if (!prevNeToken.equals("O") && (sb.length() > 0)) {
-                        handleEntity(prevNeToken, sb, tokens);
-                        newToken = true;
-                    }
-                    continue;
+                System.out.println("Token: " + word + " is a " + currNeToken);
+                if (currNeToken.equals("LOCATION")){
+                    answer.add(word);
                 }
-
-                if (newToken) {
-                    prevNeToken = currNeToken;
-                    newToken = false;
-                    sb.append(word);
-                    continue;
-                }
-
-                if (currNeToken.equals(prevNeToken)) {
-                    sb.append(" " + word);
-                } else {
-                    // We're done with the current entity - print it out and reset
-                    // TODO save this token into an appropriate ADT to return for useful processing..
-                    handleEntity(prevNeToken, sb, tokens);
-                    newToken = true;
-                }
-                prevNeToken = currNeToken;
             }
         }
-        return null;
+        return answer.size() > 1 ? StringUtils.join(answer, " ") : null;
     }
 
     // DATES
@@ -198,6 +199,25 @@ public class FeedNLP {
         System.out.println("--");
     }
 
+    private static String prependZeroIfNecessary(String s) {
+        return s.length() > 1 ? s : "0" + s;
+    }
+
+    static String getTodaysDateString() {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        String year = Integer.toString(cal.get(Calendar.YEAR));
+        String month = Integer.toString(cal.get(Calendar.MONTH) + 1); // 0-indexed for some reason
+        String day = Integer.toString(cal.get(Calendar.DAY_OF_MONTH));
+        month = prependZeroIfNecessary(month);
+        day = prependZeroIfNecessary(day);
+        String answer = year + "-" + month + "-" + day;
+        return answer;
+    }
+
     /**
      * Inspired by http://nlp.stanford.edu/software/sutime.html
      * @param text
@@ -212,7 +232,7 @@ public class FeedNLP {
         pipeline.addAnnotator(new TimeAnnotator("sutime", props));
 
         Annotation annotation = new Annotation(text);
-        annotation.set(CoreAnnotations.DocDateAnnotation.class, "2013-07-14");
+        annotation.set(CoreAnnotations.DocDateAnnotation.class, getTodaysDateString());
         pipeline.annotate(annotation);
         List<CoreMap> timexAnnsAll = annotation.get(TimeAnnotations.TimexAnnotations.class);
 

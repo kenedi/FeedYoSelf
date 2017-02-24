@@ -29,7 +29,7 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'edu.stanford.nlp:stanford-corenlp:3.7.0'
     compile 'edu.stanford.nlp:stanford-corenlp:3.7.0:models'
-    compile('com.microsoft.services:outlook-services:2.1.0'){
-        transitive = true
-    }
+//    compile('com.microsoft.services:outlook-services:2.1.0'){
+//        transitive = true
+//    }
 }
