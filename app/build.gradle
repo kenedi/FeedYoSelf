@@ -19,17 +19,30 @@ android {
     }
 }
 
+repositories {
+    maven {
+        url 'http://oss.jfrog.org/artifactory/oss-snapshot-local'
+    }
+}
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     compile 'com.android.support:appcompat-v7:25.1.1'
-    compile 'com.google.android.gms:play-services:10.0.1'
+//    compile 'com.google.android.gms:play-services:10.0.1'
+    compile 'com.google.android.gms:play-services-auth:10.0.1'
     testCompile 'junit:junit:4.12'
     compile 'edu.stanford.nlp:stanford-corenlp:3.7.0'
     compile 'edu.stanford.nlp:stanford-corenlp:3.7.0:models'
-//    compile('com.microsoft.services:outlook-services:2.1.0'){
-//        transitive = true
-//    }
+    compile 'pub.devrel:easypermissions:0.2.1'
+    compile('com.google.api-client:google-api-client-android:1.22.0') {
+        exclude group: 'org.apache.httpcomponents'
+    }
+    compile('com.google.apis:google-api-services-gmail:v1-rev61-1.22.0') {
+        exclude group: 'org.apache.httpcomponents'
+    }
+    compile('com.google.code.findbugs:jsr305:2.0.1')
+
 }

@@ -1,7 +1,7 @@
 package com.example.kenedi.feedyoself;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 
 public class FeedYoSelfLogIn extends AppCompatActivity {
 

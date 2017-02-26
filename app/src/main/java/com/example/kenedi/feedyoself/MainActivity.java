@@ -2,15 +2,13 @@ package com.example.kenedi.feedyoself;
 
 import android.content.Intent;
 import android.graphics.Color;
-import android.support.v7.app.AppCompatActivity;
+import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
-import android.widget.Space;
 import android.widget.TextView;
+import com.google.android.gms.common.api.GoogleApiClient;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -22,6 +20,12 @@ public class MainActivity extends AppCompatActivity {
     String[] timeArray = {"1:00 - 2:00", "11:00 - 2:00", "4:00 - 5:00", "8:00 - 9:00"};
     int day = 0;
 
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,8 +34,8 @@ public class MainActivity extends AppCompatActivity {
         //ScrollView mainView = (ScrollView) findViewById(R.id.scroll);
         LinearLayout mainLayout = (LinearLayout) findViewById(R.id.ll);
 
-        for(int i = 0; i < infoArray.length; i++){
-            if(dateArray[i] != day){
+        for (int i = 0; i < infoArray.length; i++) {
+            if (dateArray[i] != day) {
                 day = dateArray[i];
                 LinearLayout a = new LinearLayout(this);
                 a.setOrientation(LinearLayout.HORIZONTAL);
@@ -50,11 +54,11 @@ public class MainActivity extends AppCompatActivity {
 
             eventTime.setText(timeArray[i]);
             eventTime.setTextSize(15);
-            eventTime.setPadding(20,30,30,30);
+            eventTime.setPadding(20, 30, 30, 30);
 
             eventInfo.setText(infoArray[i]);
             eventInfo.setTextSize(20);
-            eventInfo.setPadding(10,10,10,10);
+            eventInfo.setPadding(10, 10, 10, 10);
             eventInfo.setBackgroundColor(Color.parseColor("#95AB63"));
 
             b.addView(eventTime);
@@ -63,13 +67,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void sendMessage(View view){
+    public void sendMessage(View view) {
         Intent intent = new Intent(MainActivity.this, FeedYoSelfMap.class);
         startActivity(intent);
     }
 
-    public void sendMessage2(View view){
+    public void sendMessage2(View view) {
         Intent intent = new Intent(MainActivity.this, FeedYoSelfLogIn.class);
         startActivity(intent);
     }
-}
