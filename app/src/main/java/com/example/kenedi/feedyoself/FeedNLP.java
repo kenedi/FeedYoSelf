@@ -13,20 +13,85 @@ import java.util.ListIterator;
 import java.util.Properties;
 import java.util.Set;
 
-import edu.stanford.nlp.ling.CoreAnnotations;
-import edu.stanford.nlp.ling.CoreLabel;
-import edu.stanford.nlp.pipeline.Annotation;
-import edu.stanford.nlp.pipeline.AnnotationPipeline;
-import edu.stanford.nlp.pipeline.POSTaggerAnnotator;
-import edu.stanford.nlp.pipeline.StanfordCoreNLP;
-import edu.stanford.nlp.pipeline.TokenizerAnnotator;
-import edu.stanford.nlp.pipeline.WordsToSentencesAnnotator;
-import edu.stanford.nlp.time.SUTime;
-import edu.stanford.nlp.time.TimeAnnotations;
-import edu.stanford.nlp.time.TimeAnnotator;
-import edu.stanford.nlp.time.TimeExpression;
-import edu.stanford.nlp.util.CoreMap;
-import edu.stanford.nlp.util.StringUtils;
+// old build.gradle:
+//apply plugin: 'com.android.application'
+//
+//        android {
+//        compileSdkVersion 25
+//        buildToolsVersion "25.0.2"
+//        defaultConfig {
+//        applicationId "com.example.kenedi.feedyoself"
+//        minSdkVersion 18
+//        targetSdkVersion 25
+//        versionCode 1
+//        versionName "1.0"
+//        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+//        multiDexEnabled true
+//        jackOptions {
+//        enabled true
+//        }
+//        }
+//        buildTypes {
+//        release {
+//        minifyEnabled false
+//        proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+//        }
+//        }
+//        compileOptions {
+//        sourceCompatibility JavaVersion.VERSION_1_8
+//        targetCompatibility JavaVersion.VERSION_1_8
+//        }
+//        packagingOptions {
+//        exclude 'edu/stanford/nlp/pipeline/demo/**'
+//        }
+//        }
+//
+//        repositories {
+//        maven {
+//        url 'http://oss.jfrog.org/artifactory/oss-snapshot-local'
+//        }
+//        }
+//
+//        dependencies {
+//        compile fileTree(dir: 'libs', include: ['*.jar'])
+//        androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+//        exclude group: 'com.android.support', module: 'support-annotations'
+//        })
+//        compile 'com.android.support:appcompat-v7:25.1.1'
+//        compile 'com.google.android.gms:play-services:10.0.1'
+//        compile 'com.google.android.gms:play-services-auth:10.0.1'
+//        testCompile 'junit:junit:4.12'
+//        compile 'edu.stanford.nlp:stanford-corenlp:3.7.0'
+//        compile 'edu.stanford.nlp:stanford-corenlp:3.7.0:models'
+//        compile 'pub.devrel:easypermissions:0.2.1'
+//        compile('com.google.api-client:google-api-client-android:1.22.0') {
+//        exclude group: 'org.apache.httpcomponents'
+//        }
+//        compile('com.google.apis:google-api-services-gmail:v1-rev61-1.22.0') {
+//        exclude group: 'org.apache.httpcomponents'
+//        }
+//        compile('com.google.code.findbugs:jsr305:2.0.1')
+//
+//        }
+
+
+// in app/build.gradle:
+//  compile 'edu.stanford.nlp:stanford-corenlp:3.7.0'
+//  compile 'edu.stanford.nlp:stanford-corenlp:3.7.0:models'
+//import edu.stanford.nlp.ling.CoreAnnotations;
+//import edu.stanford.nlp.ling.CoreLabel;
+//import edu.stanford.nlp.pipeline.Annotation;
+//import edu.stanford.nlp.pipeline.AnnotationPipeline;
+//import edu.stanford.nlp.pipeline.POSTaggerAnnotator;
+//import edu.stanford.nlp.pipeline.StanfordCoreNLP;
+//import edu.stanford.nlp.pipeline.TokenizerAnnotator;
+//import edu.stanford.nlp.pipeline.WordsToSentencesAnnotator;
+//import edu.stanford.nlp.time.SUTime;
+//import edu.stanford.nlp.time.TimeAnnotations;
+//import edu.stanford.nlp.time.TimeAnnotator;
+//import edu.stanford.nlp.time.TimeExpression;
+//import edu.stanford.nlp.util.CoreMap;
+//import edu.stanford.nlp.util.StringUtils;
 
 /**
  * Created by nicholasbradford on 2/22/17.
@@ -87,117 +152,73 @@ public class FeedNLP {
 //        inSb.setLength(0);
     }
 
-
-//    //I don't know why I can't get this code out of the box from StanfordNLP, multi-token entities
-//    //are far more interesting and useful..
-//    //TODO make this code simpler..
-//    for (CoreMap sentence : sentences) {
-//        // traversing the words in the current sentence, "O" is a sensible default to initialise
-//        // tokens to since we're not interested in unclassified / unknown things..
-//        String prevNeToken = "O";
-//        String currNeToken = "O";
-//        boolean newToken = true;
-//        for (CoreLabel token : sentence.get(CoreAnnotations.TokensAnnotation.class)) {
-//            currNeToken = token.get(CoreAnnotations.NamedEntityTagAnnotation.class);
-//            String word = token.get(CoreAnnotations.TextAnnotation.class);
-//            // Strip out "O"s completely, makes code below easier to understand
-//            if (currNeToken.equals("O")) {
-//                // LOG.debug("Skipping '{}' classified as {}", word, currNeToken);
-//                if (!prevNeToken.equals("O") && (sb.length() > 0)) {
-//                    handleEntity(prevNeToken, sb, tokens);
-//                    newToken = true;
-//                }
-//                continue;
-//            }
-//
-//            if (newToken) {
-//                prevNeToken = currNeToken;
-//                newToken = false;
-//                sb.append(word);
-//                continue;
-//            }
-//
-//            if (currNeToken.equals(prevNeToken)) {
-//                sb.append(" " + word);
-//            } else {
-//                // We're done with the current entity - print it out and reset
-//                // TODO save this token into an appropriate ADT to return for useful processing..
-//                handleEntity(prevNeToken, sb, tokens);
-//                newToken = true;
-//            }
-//            prevNeToken = currNeToken;
-//            if (answer == null) {
-//                answer = prevNeToken;
-//            }
-//        }
-//    }
-
     /**
      * Inspired by http://www.informit.com/articles/article.aspx?p=2265404
      * @param text
      * @return
      */
     static String extractLocation(String text) {
-        Properties props = new Properties();
-        props.put("annotators", "tokenize, ssplit, pos, lemma, ner");
-        StanfordCoreNLP pipeline = new StanfordCoreNLP(props);
-        Annotation document = new Annotation(text);
-        pipeline.annotate(document);
-        List<CoreMap> sentences = document.get(CoreAnnotations.SentencesAnnotation.class);
-        List<String> answer = new ArrayList<>();
-        for (CoreMap sentence : sentences) {
-            String currNeToken;
-            for (CoreLabel token : sentence.get(CoreAnnotations.TokensAnnotation.class)) {
-                currNeToken = token.get(CoreAnnotations.NamedEntityTagAnnotation.class);
-                String word = token.get(CoreAnnotations.TextAnnotation.class);
-                System.out.println("Token: " + word + " is a " + currNeToken);
-                if (currNeToken.equals("LOCATION")){
-                    answer.add(word);
-                }
-            }
-        }
-        return answer.size() > 1 ? StringUtils.join(answer, " ") : null;
+//        Properties props = new Properties();
+//        props.put("annotators", "tokenize, ssplit, pos, lemma, ner");
+//        StanfordCoreNLP pipeline = new StanfordCoreNLP(props);
+//        Annotation document = new Annotation(text);
+//        pipeline.annotate(document);
+//        List<CoreMap> sentences = document.get(CoreAnnotations.SentencesAnnotation.class);
+//        List<String> answer = new ArrayList<>();
+//        for (CoreMap sentence : sentences) {
+//            String currNeToken;
+//            for (CoreLabel token : sentence.get(CoreAnnotations.TokensAnnotation.class)) {
+//                currNeToken = token.get(CoreAnnotations.NamedEntityTagAnnotation.class);
+//                String word = token.get(CoreAnnotations.TextAnnotation.class);
+//                System.out.println("Token: " + word + " is a " + currNeToken);
+//                if (currNeToken.equals("LOCATION")){
+//                    answer.add(word);
+//                }
+//            }
+//        }
+//        return answer.size() > 1 ? StringUtils.join(answer, " ") : null;
+        return null;
     }
 
     // DATES
 
-    private static Date getDates(List<CoreMap> timexAnnsAll) {
-        if (timexAnnsAll.size() == 0){
-            return null;
-        }
+//    private static Date getDates(List<CoreMap> timexAnnsAll) {
+//        if (timexAnnsAll.size() == 0){
+//            return null;
+//        }
+//
+//        CoreMap cm = timexAnnsAll.get(0);
+//        SUTime.Temporal temporal = cm.get(TimeExpression.Annotation.class).getTemporal();
+//        String originalString = temporal.toString();
+//        StringBuilder sb = new StringBuilder(originalString);
+//        sb.deleteCharAt(sb.indexOf("T"));
+//        String modifiedString = sb.toString();
+//        System.out.println("Modified string: " + modifiedString);
+//
+//        // convert to Date object
+//        DateFormat df = new SimpleDateFormat("yyyy-MM-ddHH:mm"); // 2013-07-1520:00
+//        Date startDate = null;
+//        try {
+//            startDate = df.parse(modifiedString);
+//            String newDateString = df.format(startDate);
+//            System.out.println(newDateString);
+//        } catch (ParseException e) {
+//            e.printStackTrace();
+//        }
+//        return startDate;
+//    }
 
-        CoreMap cm = timexAnnsAll.get(0);
-        SUTime.Temporal temporal = cm.get(TimeExpression.Annotation.class).getTemporal();
-        String originalString = temporal.toString();
-        StringBuilder sb = new StringBuilder(originalString);
-        sb.deleteCharAt(sb.indexOf("T"));
-        String modifiedString = sb.toString();
-        System.out.println("Modified string: " + modifiedString);
-
-        // convert to Date object
-        DateFormat df = new SimpleDateFormat("yyyy-MM-ddHH:mm"); // 2013-07-1520:00
-        Date startDate = null;
-        try {
-            startDate = df.parse(modifiedString);
-            String newDateString = df.format(startDate);
-            System.out.println(newDateString);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return startDate;
-    }
-
-    private static void prettyPrint(Annotation annotation, List<CoreMap> timexAnnsAll) {
-        System.out.println(annotation.get(CoreAnnotations.TextAnnotation.class));
-        for (CoreMap cm : timexAnnsAll) {
-            List<CoreLabel> tokens = cm.get(CoreAnnotations.TokensAnnotation.class);
-            System.out.println(cm + " [from char offset " +
-                    tokens.get(0).get(CoreAnnotations.CharacterOffsetBeginAnnotation.class) +
-                    " to " + tokens.get(tokens.size() - 1).get(CoreAnnotations.CharacterOffsetEndAnnotation.class) + ']' +
-                    " --> " + cm.get(TimeExpression.Annotation.class).getTemporal());
-        }
-        System.out.println("--");
-    }
+//    private static void prettyPrint(Annotation annotation, List<CoreMap> timexAnnsAll) {
+//        System.out.println(annotation.get(CoreAnnotations.TextAnnotation.class));
+//        for (CoreMap cm : timexAnnsAll) {
+//            List<CoreLabel> tokens = cm.get(CoreAnnotations.TokensAnnotation.class);
+//            System.out.println(cm + " [from char offset " +
+//                    tokens.get(0).get(CoreAnnotations.CharacterOffsetBeginAnnotation.class) +
+//                    " to " + tokens.get(tokens.size() - 1).get(CoreAnnotations.CharacterOffsetEndAnnotation.class) + ']' +
+//                    " --> " + cm.get(TimeExpression.Annotation.class).getTemporal());
+//        }
+//        System.out.println("--");
+//    }
 
     private static String prependZeroIfNecessary(String s) {
         return s.length() > 1 ? s : "0" + s;
@@ -224,19 +245,20 @@ public class FeedNLP {
      * @return
      */
     static Date extractDate(String text) {
-        Properties props = new Properties();
-        AnnotationPipeline pipeline = new AnnotationPipeline();
-        pipeline.addAnnotator(new TokenizerAnnotator(false));
-        pipeline.addAnnotator(new WordsToSentencesAnnotator(false));
-        pipeline.addAnnotator(new POSTaggerAnnotator(false));
-        pipeline.addAnnotator(new TimeAnnotator("sutime", props));
-
-        Annotation annotation = new Annotation(text);
-        annotation.set(CoreAnnotations.DocDateAnnotation.class, getTodaysDateString());
-        pipeline.annotate(annotation);
-        List<CoreMap> timexAnnsAll = annotation.get(TimeAnnotations.TimexAnnotations.class);
-
-        prettyPrint(annotation, timexAnnsAll);
-        return getDates(timexAnnsAll);
+//        Properties props = new Properties();
+//        AnnotationPipeline pipeline = new AnnotationPipeline();
+//        pipeline.addAnnotator(new TokenizerAnnotator(false));
+//        pipeline.addAnnotator(new WordsToSentencesAnnotator(false));
+//        pipeline.addAnnotator(new POSTaggerAnnotator(false));
+//        pipeline.addAnnotator(new TimeAnnotator("sutime", props));
+//
+//        Annotation annotation = new Annotation(text);
+//        annotation.set(CoreAnnotations.DocDateAnnotation.class, getTodaysDateString());
+//        pipeline.annotate(annotation);
+//        List<CoreMap> timexAnnsAll = annotation.get(TimeAnnotations.TimexAnnotations.class);
+//
+//        prettyPrint(annotation, timexAnnsAll);
+//        return getDates(timexAnnsAll);
+        return null;
     }
 }
