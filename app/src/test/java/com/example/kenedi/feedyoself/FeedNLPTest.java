@@ -4,7 +4,6 @@ import org.junit.Test;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 
 import static org.junit.Assert.*;
@@ -16,7 +15,8 @@ import static org.junit.Assert.*;
 
 public class FeedNLPTest {
 
-    private static String emailSimpleYes = "Food tomorrow at 8pm in Salisbury Labs 103!";
+//    private static String emailSimpleYes = "7am food Salisbury Labs";
+    private static String emailSimpleYes = "Food today at 7:30am in Salisbury Labs 103!";
     private static String emailSimpleNo = "Remember to get that homework assignment complete.";
 
     @Test
@@ -40,7 +40,7 @@ public class FeedNLPTest {
         String answer = "Salisbury Labs";
         String location = FeedNLP.extractLocation(emailSimpleYes);
         assertNotNull(location);
-        assertEquals(location, answer);
+        assertEquals(answer, location);
     }
 
     @Test
@@ -48,30 +48,32 @@ public class FeedNLPTest {
         assertNull(FeedNLP.extractLocation(emailSimpleNo));
     }
 
-    @Test
-    public void test_getTodaysDateString() {
-        System.out.println(FeedNLP.getTodaysDateString());
-    }
+//    @Test
+//    public void test_getTodaysDateString() {
+//        System.out.println(FeedNLP.getTodaysDateString());
+//    }
 
     @Test
-    public void extractDate_simpleYes() {
-        String dateString = FeedNLP.getTodaysDateString();
+    public void extractTime_simpleYes() {
+//        String dateString = FeedNLP.getTodaysDateString();
         Date trueDate = null;
         try {
-            trueDate = (new SimpleDateFormat("yyyy-MM-ddHH:mm")).parse(dateString + "20:00");
+//            trueDate = (new SimpleDateFormat("yyyy-MM-ddHH:mm")).parse(dateString + "20:00");
+            trueDate = new SimpleDateFormat("h:mm").parse("7:30am");
         }
         catch (ParseException e) {
             e.printStackTrace();
         }
-        trueDate.setDate(trueDate.getDate() + 1);
-        Date date = FeedNLP.extractDate(emailSimpleYes);
+//        trueDate.setDate(trueDate.getDate() + 1);
+        Date date = FeedNLP.extractTime(emailSimpleYes);
         assertNotNull(date);
+        System.out.println("Read: " + date.toString() + " Expected: " + trueDate.toString());
         assertTrue(date.equals(trueDate));
     }
 
     @Test
-    public void extractDate_simpleNo() {
-        assertNull(FeedNLP.extractDate(emailSimpleNo));
+    public void extractTime_simpleNo() {
+        assertNull(FeedNLP.extractTime(emailSimpleNo));
     }
 
     @Test

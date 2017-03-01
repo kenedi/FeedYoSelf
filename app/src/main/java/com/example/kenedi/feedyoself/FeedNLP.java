@@ -1,17 +1,22 @@
 package com.example.kenedi.feedyoself;
 
+//import java.text.DateFormat;
+//import java.text.ParseException;
+//import java.text.SimpleDateFormat;
+//import java.util.ArrayList;
+//import java.util.HashSet;
+//import java.util.ListIterator;
+//import java.util.Properties;
+//import java.util.Set;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.ListIterator;
-import java.util.Properties;
-import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 
 // old build.gradle:
 //apply plugin: 'com.android.application'
@@ -119,29 +124,89 @@ public class FeedNLP {
             "coffee"
     };
 
-    private static Set<String> FOOD_SET = new HashSet<>(Arrays.asList(FOOD_STRINGS));
+    private static String[] LOCATION_STRINGS = {
+            "Atwater Kent",
+            "AK",
+            "Fuller Laboratories",
+            "Fuller Labs",
+            "Fuller Lab",
+            "FL",
+            "Goddard Hall",
+            "GH",
+            "Higgins Laboratories",
+            "Higgins Labs",
+            "Higgins Lab",
+            "HL",
+            "Kaven Hall",
+            "KH",
+            "Olin Hall",
+            "OH",
+            "Campus Center",
+            "CC",
+            "Salisbury Laboratories",
+            "Salisbury Labs",
+            "Salisbury Lab"
+    };
+
+    private static String[] TIME_FORMAT_STRINGS = {
+            "hh:mm:ss",
+            "hh:mm:ss",
+            "hh:mm",
+            "h:mm",
+            "hh",
+            "h"
+    };
+
+    //    private static Set<String> FOOD_SET = new HashSet<>(Arrays.asList(FOOD_STRINGS));
+    private static Pattern FOOD_PATTERN = assemblePattern(LOCATION_STRINGS, false);
+    private static Pattern LOCATION_PATTERN = assemblePattern(LOCATION_STRINGS, true);
+    private static List<String> TIME_FORMAT_LIST = Arrays.asList(TIME_FORMAT_STRINGS);
+
 
     static FoodEvent processEmail(String text) {
-        if (! isEmailAboutFood(text)) {
+        if (!isEmailAboutFood(text)) {
             return null;
         }
-        String title = "TitlePlaceholder";
-        String location = extractLocation(text);
-        Date date = extractDate(text);
-        return new FoodEvent(title, location, date);
+        return new FoodEvent(extractTitle(text), extractLocation(text), extractTime(text));
     }
 
     static boolean isEmailAboutFood(String text) {
-        String[] tokens = text.split(" ");
-        List<String> textList = Arrays.asList(tokens);
-        ListIterator<String> iterator = textList.listIterator();
-        while (iterator.hasNext())
-        {
-            iterator.set(iterator.next().toLowerCase());
+//        String[] tokens = text.split(" ");
+//        List<String> textList = Arrays.asList(tokens);
+//        ListIterator<String> iterator = textList.listIterator();
+//        while (iterator.hasNext())
+//        {
+//            iterator.set(iterator.next().toLowerCase());
+//        }
+//        Set<String> textSet = new HashSet<>(textList);
+//        textSet.retainAll(FOOD_SET);
+//        return textSet.size() > 0;
+        return null != getFirstStringMatchingPattern(FOOD_PATTERN, text);
+    }
+
+    private static String getFirstStringMatchingPattern(Pattern pattern, String text) {
+        Matcher m = pattern.matcher(text);
+        String answer = null;
+        if (m.find()) {
+            answer = m.group(1);
         }
-        Set<String> textSet = new HashSet<>(textList);
-        textSet.retainAll(FOOD_SET);
-        return textSet.size() > 0;
+        return answer;
+    }
+
+    private static Pattern assemblePattern(String[] words, boolean isNumberAllowed) {
+        List potentialWords = Arrays.asList(words);
+        String lstr = potentialWords.toString();
+        String regex = "(" + lstr.substring(1, lstr.length() - 1).replace(", ", "|") + ")";
+//        if (isNumberAllowed) {
+//            regex += "|" + lstr.substring(1, lstr.length() - 1).replace(", ", " \\+?\\d+|") + " \\+?\\d+";
+//        }
+
+        Pattern locationPattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+        return locationPattern;
+    }
+
+    static String extractTitle(String text) {
+        return getFirstStringMatchingPattern(FOOD_PATTERN, text);
     }
 
     // LOCATION
@@ -153,11 +218,11 @@ public class FeedNLP {
     }
 
     /**
-     * Inspired by http://www.informit.com/articles/article.aspx?p=2265404
      * @param text
      * @return
      */
     static String extractLocation(String text) {
+//        // Inspired by http://www.informit.com/articles/article.aspx?p=2265404
 //        Properties props = new Properties();
 //        props.put("annotators", "tokenize, ssplit, pos, lemma, ner");
 //        StanfordCoreNLP pipeline = new StanfordCoreNLP(props);
@@ -177,7 +242,7 @@ public class FeedNLP {
 //            }
 //        }
 //        return answer.size() > 1 ? StringUtils.join(answer, " ") : null;
-        return null;
+        return getFirstStringMatchingPattern(LOCATION_PATTERN, text);
     }
 
     // DATES
@@ -220,31 +285,32 @@ public class FeedNLP {
 //        System.out.println("--");
 //    }
 
-    private static String prependZeroIfNecessary(String s) {
-        return s.length() > 1 ? s : "0" + s;
-    }
-
-    static String getTodaysDateString() {
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.HOUR_OF_DAY, 0);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
-        String year = Integer.toString(cal.get(Calendar.YEAR));
-        String month = Integer.toString(cal.get(Calendar.MONTH) + 1); // 0-indexed for some reason
-        String day = Integer.toString(cal.get(Calendar.DAY_OF_MONTH));
-        month = prependZeroIfNecessary(month);
-        day = prependZeroIfNecessary(day);
-        String answer = year + "-" + month + "-" + day;
-        return answer;
-    }
+//    private static String prependZeroIfNecessary(String s) {
+//        return s.length() > 1 ? s : "0" + s;
+//    }
+//
+//    static String getTodaysDateString() {
+//        Calendar cal = Calendar.getInstance();
+//        cal.set(Calendar.HOUR_OF_DAY, 0);
+//        cal.set(Calendar.MINUTE, 0);
+//        cal.set(Calendar.SECOND, 0);
+//        cal.set(Calendar.MILLISECOND, 0);
+//        String year = Integer.toString(cal.get(Calendar.YEAR));
+//        String month = Integer.toString(cal.get(Calendar.MONTH) + 1); // 0-indexed for some reason
+//        String day = Integer.toString(cal.get(Calendar.DAY_OF_MONTH));
+//        month = prependZeroIfNecessary(month);
+//        day = prependZeroIfNecessary(day);
+//        String answer = year + "-" + month + "-" + day;
+//        return answer;
+//    }
 
     /**
      * Inspired by http://nlp.stanford.edu/software/sutime.html
+     *
      * @param text
      * @return
      */
-    static Date extractDate(String text) {
+    static Date extractTime(String text) {
 //        Properties props = new Properties();
 //        AnnotationPipeline pipeline = new AnnotationPipeline();
 //        pipeline.addAnnotator(new TokenizerAnnotator(false));
@@ -259,6 +325,28 @@ public class FeedNLP {
 //
 //        prettyPrint(annotation, timexAnnsAll);
 //        return getDates(timexAnnsAll);
-        return null;
+        String regex = "(((0?[1-9]|1[012])(:[0-5][0-9])?am)|((0?[0-9]|1[012])(:[0-5][0-9])?pm))";
+        Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+        String answer = getFirstStringMatchingPattern(pattern, text);
+
+        if (answer == null) {
+            return null;
+        }
+
+        Date date = null;
+        for (String format : TIME_FORMAT_LIST) {
+            try {
+                DateFormat sdf = new SimpleDateFormat(format);
+                date = sdf.parse(answer);
+                break;
+            } catch (ParseException e) {
+                //e.printStackTrace();
+            }
+        }
+        if (date == null) {
+            System.out.println("WARNING: detected date was not matched by any simple parsers.");
+        }
+
+        return date;
     }
 }
