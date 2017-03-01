@@ -54,7 +54,7 @@
                     android:id="@+id/imageButton"
                     android:layout_row="0"
                     android:layout_column="17"
-                    android:onClick="sendMessage2"/>
+                    android:onClick="sendMessage"/>
 
             </LinearLayout>
 
