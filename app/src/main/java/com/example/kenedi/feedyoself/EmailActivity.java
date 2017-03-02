@@ -62,6 +62,8 @@ public class EmailActivity extends Activity
     private static final String PREF_ACCOUNT_NAME = "accountName";
     private static final String[] SCOPES = { GmailScopes.GMAIL_LABELS };
 
+    private com.google.api.services.gmail.Gmail mService;
+
     /**
      * Create the main activity.
      * @param savedInstanceState previously saved instance data.
@@ -94,6 +96,8 @@ public class EmailActivity extends Activity
         });
         activityLayout.addView(mCallApiButton);
 
+
+
         mOutputText = new TextView(this);
         mOutputText.setLayoutParams(tlp);
         mOutputText.setPadding(16, 16, 16, 16);
@@ -112,7 +116,43 @@ public class EmailActivity extends Activity
         mCredential = GoogleAccountCredential.usingOAuth2(
                 getApplicationContext(), Arrays.asList(SCOPES))
                 .setBackOff(new ExponentialBackOff());
+
+        mLogEmailsButton = new Button(this);
+                mLogEmailsButton.setText("Get emails");
+                mLogEmailsButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //Get emails here
+                        listMessagesMatchingQuery(mService,"me","food");
+                    }
+                });
+        activityLayout.addView(mLogEmailsButton);        
+
+
     }
+
+    public static void listMessagesMatchingQuery(Gmail service, String userId,
+      String query) throws IOException {
+    ListMessagesResponse response = service.users().messages().list(userId).setQ(query).execute();
+
+    List<Message> messages = new ArrayList<Message>();
+    while (response.getMessages() != null) {
+      messages.addAll(response.getMessages());
+      if (response.getNextPageToken() != null) {
+        String pageToken = response.getNextPageToken();
+        response = service.users().messages().list(userId).setQ(query)
+            .setPageToken(pageToken).execute();
+      } else {
+        break;
+      }
+    }
+
+    for (Message message : messages) {
+      System.out.println(message.toPrettyString());
+    }
+
+    //return messages;
+  }
 
 
 
@@ -319,7 +359,7 @@ public class EmailActivity extends Activity
      * Placing the API calls in their own task ensures the UI stays responsive.
      */
     private class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
-        private com.google.api.services.gmail.Gmail mService = null;
+        mService = null;
         private Exception mLastError = null;
 
         MakeRequestTask(GoogleAccountCredential credential) {
