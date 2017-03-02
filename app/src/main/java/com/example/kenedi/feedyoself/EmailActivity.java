@@ -12,6 +12,7 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.ExponentialBackOff;
 
+import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.GmailScopes;
 
 import com.google.api.services.gmail.model.*;
@@ -60,7 +61,10 @@ public class EmailActivity extends Activity
 
     private static final String BUTTON_TEXT = "Call Gmail API";
     private static final String PREF_ACCOUNT_NAME = "accountName";
-    private static final String[] SCOPES = { GmailScopes.GMAIL_LABELS };
+    private static final String[ ] SCOPES = { GmailScopes.GMAIL_LABELS, GmailScopes.GMAIL_COMPOSE,
+            GmailScopes.GMAIL_INSERT, GmailScopes.GMAIL_MODIFY, GmailScopes.GMAIL_READONLY, GmailScopes.MAIL_GOOGLE_COM };
+
+    private Message messages;
 
 
     /**
@@ -115,17 +119,6 @@ public class EmailActivity extends Activity
         mCredential = GoogleAccountCredential.usingOAuth2(
                 getApplicationContext(), Arrays.asList(SCOPES))
                 .setBackOff(new ExponentialBackOff());
-
-        mLogEmailsButton = new Button(this);
-                mLogEmailsButton.setText("Get emails");
-                mLogEmailsButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        //Get emails here
-                        listMessagesMatchingQuery(mService,"me","food");
-                    }
-                });
-        activityLayout.addView(mLogEmailsButton);        
 
 
     }
@@ -337,6 +330,7 @@ public class EmailActivity extends Activity
     private class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
         private com.google.api.services.gmail.Gmail mService = null;
         private Exception mLastError = null;
+        private List<Message> messages = new ArrayList<Message>();
 
         MakeRequestTask(GoogleAccountCredential credential) {
             HttpTransport transport = AndroidHttp.newCompatibleTransport();
@@ -376,6 +370,7 @@ public class EmailActivity extends Activity
             for (Label label : listResponse.getLabels()) {
                 labels.add(label.getName());
             }
+            listMessagesMatchingQuery(mService,"me","food");
             return labels;
         }
 
@@ -418,10 +413,9 @@ public class EmailActivity extends Activity
             }
         }
 
-        private static void listMessagesMatchingQuery(Gmail service, String userId, String query) throws IOException {
+        private void listMessagesMatchingQuery(Gmail service, String userId, String query) throws IOException {
             ListMessagesResponse response = service.users().messages().list(userId).setQ(query).execute();
 
-            List<Message> messages = new ArrayList<Message>();
             while (response.getMessages() != null) {
               messages.addAll(response.getMessages());
               if (response.getNextPageToken() != null) {
@@ -433,7 +427,11 @@ public class EmailActivity extends Activity
             }
 
     for (Message message : messages) {
-      Log.d("EMAIL-DEBUG",message.toPrettyString());
+        Log.d("EMAIL-DEBUG",message.toString());
+        String body = message.getPayload().getBody().getData();
+        FeedNLP feedNLP = new FeedNLP();
+        feedNLP.processEmail(body);
+
     }
 
     //return messages;
