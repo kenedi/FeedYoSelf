@@ -38,6 +38,7 @@ import com.google.api.services.gmail.model.ListLabelsResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import pub.devrel.easypermissions.AfterPermissionGranted;
@@ -48,8 +49,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
     private static final String TAG = "FeedYoSelf";
 
-    String[] infoArray = {"One", "Two", "Three", "Four"};
-    int[] dateArray = {1, 2, 2, 3};
+    //String[] infoArray = {"One", "Two", "Three", "Four"};
+    String[] infoArray;
+    //int[] dateArray = {1, 2, 2, 3};
     String[] timeArray = {"1:00 - 2:00", "11:00 - 2:00", "4:00 - 5:00", "8:00 - 9:00"};
     int day = 0;
 
@@ -67,6 +69,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     private static final String PREF_ACCOUNT_NAME = "accountName";
     private static final String[] SCOPES = {GmailScopes.GMAIL_LABELS};
 
+    ArrayList<FoodEvent> foodEvents = (ArrayList<FoodEvent>) getIntent().getSerializableExtra("foodEvents");
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,17 +82,17 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         LinearLayout mainLayout = (LinearLayout) findViewById(R.id.ll);
 
         for (int i = 0; i < infoArray.length; i++) {
-            if (dateArray[i] != day) {
-                day = dateArray[i];
-                LinearLayout a = new LinearLayout(this);
-                a.setOrientation(LinearLayout.HORIZONTAL);
-                TextView textView = new TextView(this);
-
-                textView.setText(dateArray[i] + "Weekday");
-                textView.setTextSize(30);
-                a.addView(textView);
-                mainLayout.addView(a);
-            }
+//            if (dateArray[i] != day) {
+//                day = dateArray[i];
+//                LinearLayout a = new LinearLayout(this);
+//                a.setOrientation(LinearLayout.HORIZONTAL);
+//                TextView textView = new TextView(this);
+//
+//                textView.setText(dateArray[i] + "Weekday");
+//                textView.setTextSize(30);
+//                a.addView(textView);
+//                mainLayout.addView(a);
+//            }
 
             LinearLayout b = new LinearLayout(this);
             b.setOrientation(LinearLayout.HORIZONTAL);
@@ -116,6 +120,18 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
     }
 
+    public void populateArrays(ArrayList<FoodEvent> arrayList){
+        int i = 0;
+        Iterator<FoodEvent> iter = foodEvents.iterator();
+        while(iter.hasNext()){
+            FoodEvent fe = iter.next();
+            String title = fe.getTitle();
+            String loc = fe.getLoc();
+            String info = title + " " + loc;
+            infoArray[i] = info;
+            i++;
+        }
+    }
     public void sendMessage(View view) {
         Intent intent = new Intent(MainActivity.this, FeedYoSelfMap.class);
         startActivity(intent);

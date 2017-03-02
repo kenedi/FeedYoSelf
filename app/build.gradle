@@ -44,4 +44,5 @@ dependencies {
     compile 'com.google.code.findbugs:jsr305:2.0.1'
     compile 'commons-codec:commons-codec:1.10'
     compile files('libs/javax.mail-api-1.5.6.jar')
+    compile group: 'org.jsoup', name: 'jsoup', version: '1.7.2'
 }

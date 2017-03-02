@@ -41,6 +41,7 @@ import android.widget.TextView;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -50,13 +51,14 @@ import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 import com.google.api.client.util.Base64;
 import org.apache.commons.codec.binary.StringUtils;
+import org.jsoup.Jsoup;
 
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 import android.text.Html;
 
-public class EmailActivity extends Activity
+public class  EmailActivity extends Activity
         implements EasyPermissions.PermissionCallbacks {
     GoogleAccountCredential mCredential;
     private TextView mOutputText;
@@ -74,6 +76,7 @@ public class EmailActivity extends Activity
             GmailScopes.GMAIL_INSERT, GmailScopes.GMAIL_MODIFY, GmailScopes.GMAIL_READONLY, GmailScopes.MAIL_GOOGLE_COM };
 
     private Message messages;
+    ArrayList<FoodEvent> foodEvents;
 
 
     /**
@@ -108,6 +111,17 @@ public class EmailActivity extends Activity
         });
         activityLayout.addView(mCallApiButton);
 
+        Button myButton = new Button(this);
+        myButton.setText("Go to FeedYoSelf");
+        activityLayout.addView(myButton);
+        myButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(EmailActivity.this, MainActivity.class);
+                intent.putExtra("foodEvents", foodEvents);
+                startActivity(intent);
+            }
+        });
 
 
         mOutputText = new TextView(this);
@@ -379,7 +393,7 @@ public class EmailActivity extends Activity
             for (Label label : listResponse.getLabels()) {
                 labels.add(label.getName());
             }
-            //listMessagesMatchingQuery(mService,"me","food"); TODO
+            listMessagesMatchingQuery(mService,"me","food after:2017/02/15");
             return labels;
         }
 
@@ -443,9 +457,17 @@ public class EmailActivity extends Activity
 
                 Message currentMessage = service.users().messages().get(userId, messageId).execute();
                 //MessagePart part = currentMessage.getPayload();
-                System.out.println(StringUtils.newStringUtf8(Base64.decodeBase64(currentMessage.getPayload().getBody().getData())));
-                CharSequence stupidHTML = StringUtils.newStringUtf8(Base64.decodeBase64(currentMessage.getPayload().getBody().getData()));
-                System.out.println(Html.escapeHtml(stupidHTML));
+                //System.out.println(StringUtils.newStringUtf8(Base64.decodeBase64(currentMessage.getPayload().getBody().getData())));
+//                foodEvents = new ArrayList<>();
+                if(currentMessage.getPayload().getBody().getData() != null) {
+                    String stupidHTML = StringUtils.newStringUtf8(Base64.decodeBase64(currentMessage.getPayload().getBody().getData()));
+                    //System.out.println(html2text(stupidHTML));
+                    FoodEvent foodEvent = FeedNLP.processEmail(html2text(stupidHTML));
+                    if (foodEvent != null){
+                        foodEvents.add(foodEvent);
+                    }
+                }
+//
 //                Base64 base64Url = new Base64(true);
 //                byte[] emailBytes = base64Url.decodeBase64(message.getRaw());
 //                Properties props = new Properties();
@@ -456,9 +478,12 @@ public class EmailActivity extends Activity
 //                System.out.println(StringUtils.newStringUtf8(Base64.decodeBase64(currentMessage.getPayload().getBody().getData())));
 //
 //                Log.d("EMAIL-DEBUG",body);
-//                FeedNLP feedNLP = new FeedNLP();
-//                feedNLP.processEmail(body);
+
             }
+        }
+
+        public String html2text(String html) {
+            return Jsoup.parse(html).text();
         }
     }
 }

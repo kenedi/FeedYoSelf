@@ -8,6 +8,9 @@ import java.util.Date;
 
 public class FoodEvent {
 
+    String tile;
+    String location;
+
     public FoodEvent(String title) {
         this(title, null);
     }
@@ -18,5 +21,13 @@ public class FoodEvent {
 
     public FoodEvent(String title, String location, Date date) {
 
+    }
+
+    public String getTitle(){
+        return this.tile;
+    }
+
+    public  String getLoc(){
+        return  this.location;
     }
 }
