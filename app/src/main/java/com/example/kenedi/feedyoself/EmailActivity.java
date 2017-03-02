@@ -39,13 +39,22 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
+import com.google.api.client.util.Base64;
+import org.apache.commons.codec.binary.StringUtils;
+
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.internet.MimeMessage;
+import android.text.Html;
 
 public class EmailActivity extends Activity
         implements EasyPermissions.PermissionCallbacks {
@@ -330,7 +339,7 @@ public class EmailActivity extends Activity
     private class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
         private com.google.api.services.gmail.Gmail mService = null;
         private Exception mLastError = null;
-        private List<Message> messages = new ArrayList<Message>();
+        List<Message> messages = new ArrayList<Message>();
 
         MakeRequestTask(GoogleAccountCredential credential) {
             HttpTransport transport = AndroidHttp.newCompatibleTransport();
@@ -361,7 +370,7 @@ public class EmailActivity extends Activity
          * @return List of Strings labels.
          * @throws IOException
          */
-        private List<String> getDataFromApi() throws IOException {
+        private List<String> getDataFromApi() throws IOException, MessagingException {
             // Get the labels in the user's account.
             String user = "me";
             List<String> labels = new ArrayList<String>();
@@ -370,7 +379,7 @@ public class EmailActivity extends Activity
             for (Label label : listResponse.getLabels()) {
                 labels.add(label.getName());
             }
-            listMessagesMatchingQuery(mService,"me","food");
+            //listMessagesMatchingQuery(mService,"me","food"); TODO
             return labels;
         }
 
@@ -413,7 +422,7 @@ public class EmailActivity extends Activity
             }
         }
 
-        private void listMessagesMatchingQuery(Gmail service, String userId, String query) throws IOException {
+        private void listMessagesMatchingQuery(Gmail service, String userId, String query) throws IOException, MessagingException {
             ListMessagesResponse response = service.users().messages().list(userId).setQ(query).execute();
 
             while (response.getMessages() != null) {
@@ -426,15 +435,30 @@ public class EmailActivity extends Activity
               }
             }
 
-    for (Message message : messages) {
-        Log.d("EMAIL-DEBUG",message.toString());
-        String body = message.getPayload().getBody().getData();
-        FeedNLP feedNLP = new FeedNLP();
-        feedNLP.processEmail(body);
 
-    }
 
-    //return messages;
-  }
+            for (Message m : messages) {
+                String messageId = m.getId();
+
+
+                Message currentMessage = service.users().messages().get(userId, messageId).execute();
+                //MessagePart part = currentMessage.getPayload();
+                System.out.println(StringUtils.newStringUtf8(Base64.decodeBase64(currentMessage.getPayload().getBody().getData())));
+                CharSequence stupidHTML = StringUtils.newStringUtf8(Base64.decodeBase64(currentMessage.getPayload().getBody().getData()));
+                System.out.println(Html.escapeHtml(stupidHTML));
+//                Base64 base64Url = new Base64(true);
+//                byte[] emailBytes = base64Url.decodeBase64(message.getRaw());
+//                Properties props = new Properties();
+//                Session session = Session.getDefaultInstance(props, null);
+//                MimeMessage email = new MimeMessage(session, new ByteArrayInputStream(emailBytes));
+
+//                Log.d("CURRENT-MESSAGE",currentMessage.getPayload().getBody().getData());
+//                System.out.println(StringUtils.newStringUtf8(Base64.decodeBase64(currentMessage.getPayload().getBody().getData())));
+//
+//                Log.d("EMAIL-DEBUG",body);
+//                FeedNLP feedNLP = new FeedNLP();
+//                feedNLP.processEmail(body);
+            }
+        }
     }
 }
