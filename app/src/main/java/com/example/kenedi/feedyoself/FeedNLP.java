@@ -126,23 +126,23 @@ public class FeedNLP {
 
     private static String[] LOCATION_STRINGS = {
             "Atwater Kent",
-            "AK",
+//            "AK",
             "Fuller Laboratories",
             "Fuller Labs",
             "Fuller Lab",
-            "FL",
+//            "FL",
             "Goddard Hall",
-            "GH",
+//            "GH",
             "Higgins Laboratories",
             "Higgins Labs",
             "Higgins Lab",
-            "HL",
+//            "HL",
             "Kaven Hall",
-            "KH",
+//            "KH",
             "Olin Hall",
-            "OH",
+//            "OH",
             "Campus Center",
-            "CC",
+//            "CC",
             "Salisbury Laboratories",
             "Salisbury Labs",
             "Salisbury Lab"
@@ -158,7 +158,7 @@ public class FeedNLP {
     };
 
     //    private static Set<String> FOOD_SET = new HashSet<>(Arrays.asList(FOOD_STRINGS));
-    private static Pattern FOOD_PATTERN = assemblePattern(LOCATION_STRINGS, false);
+    private static Pattern FOOD_PATTERN = assemblePattern(FOOD_STRINGS, false);
     private static Pattern LOCATION_PATTERN = assemblePattern(LOCATION_STRINGS, true);
     private static List<String> TIME_FORMAT_LIST = Arrays.asList(TIME_FORMAT_STRINGS);
 
@@ -181,7 +181,8 @@ public class FeedNLP {
 //        Set<String> textSet = new HashSet<>(textList);
 //        textSet.retainAll(FOOD_SET);
 //        return textSet.size() > 0;
-        return null != getFirstStringMatchingPattern(FOOD_PATTERN, text);
+        String food = getFirstStringMatchingPattern(FOOD_PATTERN, text);
+        return null != food;
     }
 
     private static String getFirstStringMatchingPattern(Pattern pattern, String text) {

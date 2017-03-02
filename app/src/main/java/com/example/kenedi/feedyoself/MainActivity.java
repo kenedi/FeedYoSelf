@@ -82,14 +82,18 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
         foodEvents = (ArrayList<FoodEvent>) getIntent().getSerializableExtra("foodEvents");
 
+//        for (FoodEvent event : foodEvents){
+//
+//        }
+
         infoArray = new ArrayList<>();
         populateArrays(foodEvents);
 //        System.out.println(foodEvents.size());
 
         Iterator<String> iter = infoArray.iterator();
-        System.out.println("I AM ABOVE THE WHILE LOOP");
+//        System.out.println("I AM ABOVE THE WHILE LOOP");
         while(iter.hasNext()){
-            System.out.println("I AM IN THE WHILE LOOP");
+//            System.out.println("I AM IN THE WHILE LOOP");
             String info = iter.next();
 //            if (dateArray[i] != day) {
 //                day = dateArray[i];

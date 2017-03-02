@@ -397,7 +397,7 @@ public class  EmailActivity extends Activity
             for (Label label : listResponse.getLabels()) {
                 labels.add(label.getName());
             }
-            listMessagesMatchingQuery(mService,"me","food after:2016/08/1");
+            listMessagesMatchingQuery(mService,"me","food after:2017/01/1");
             return labels;
         }
 
@@ -458,7 +458,7 @@ public class  EmailActivity extends Activity
             for (Message m : messages) {
                 String messageId = m.getId();
                 Message currentMessage = service.users().messages().get(userId, messageId).execute();
-                System.out.println(currentMessage.getPayload().getBody().getData());
+                //System.out.println(currentMessage.getPayload().getBody().getData());
                 if(currentMessage.getPayload().getBody().getData() != null) {
                     String stupidHTML = StringUtils.newStringUtf8(Base64.decodeBase64(currentMessage.getPayload().getBody().getData()));
                     System.out.println(html2text(stupidHTML));

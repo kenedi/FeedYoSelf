@@ -18,6 +18,7 @@ public class FeedNLPTest {
 //    private static String emailSimpleYes = "7am food Salisbury Labs";
     private static String emailSimpleYes = "Food today at 7:30am in Salisbury Labs 103!";
     private static String emailSimpleNo = "Remember to get that homework assignment complete.";
+    private static String emailComplexYes = "my future wife will have so many food restrictions she can only eat what she grows in the backyard "; //
 
     @Test
     public void isNotNull() {
@@ -28,6 +29,11 @@ public class FeedNLPTest {
     @Test
     public void isEmailAboutFood_simpleYes() {
         assertTrue(FeedNLP.isEmailAboutFood(emailSimpleYes));
+    }
+
+    @Test
+    public void isEmailAboutFood_complexYes() {
+        assertTrue(FeedNLP.isEmailAboutFood(emailComplexYes));
     }
 
     @Test
