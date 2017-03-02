@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     private static final String TAG = "FeedYoSelf";
 
     //String[] infoArray = {"One", "Two", "Three", "Four"};
-    String[] infoArray;
+    ArrayList<String> infoArray;
     //int[] dateArray = {1, 2, 2, 3};
     String[] timeArray = {"1:00 - 2:00", "11:00 - 2:00", "4:00 - 5:00", "8:00 - 9:00"};
     int day = 0;
@@ -65,11 +65,10 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
     static final int REQUEST_PERMISSION_GET_ACCOUNTS = 1003;
 
-    private static final String BUTTON_TEXT = "Call Gmail API";
+    private static final String BUTTON_TEXT = "Pull Food Data";
     private static final String PREF_ACCOUNT_NAME = "accountName";
     private static final String[] SCOPES = {GmailScopes.GMAIL_LABELS};
-
-    ArrayList<FoodEvent> foodEvents = (ArrayList<FoodEvent>) getIntent().getSerializableExtra("foodEvents");
+    private ArrayList<FoodEvent> foodEvents;
 
 
     @Override
@@ -81,7 +80,17 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         //ScrollView mainView = (ScrollView) findViewById(R.id.scroll);
         LinearLayout mainLayout = (LinearLayout) findViewById(R.id.ll);
 
-        for (int i = 0; i < infoArray.length; i++) {
+        foodEvents = (ArrayList<FoodEvent>) getIntent().getSerializableExtra("foodEvents");
+
+        infoArray = new ArrayList<>();
+        populateArrays(foodEvents);
+//        System.out.println(foodEvents.size());
+
+        Iterator<String> iter = infoArray.iterator();
+        System.out.println("I AM ABOVE THE WHILE LOOP");
+        while(iter.hasNext()){
+            System.out.println("I AM IN THE WHILE LOOP");
+            String info = iter.next();
 //            if (dateArray[i] != day) {
 //                day = dateArray[i];
 //                LinearLayout a = new LinearLayout(this);
@@ -99,11 +108,11 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             TextView eventInfo = new TextView(this);
             TextView eventTime = new TextView(this);
 
-            eventTime.setText(timeArray[i]);
-            eventTime.setTextSize(15);
-            eventTime.setPadding(20, 30, 30, 30);
+//            eventTime.setText(timeArray[i]);
+//            eventTime.setTextSize(15);
+//            eventTime.setPadding(20, 30, 30, 30);
 
-            eventInfo.setText(infoArray[i]);
+            eventInfo.setText(info);
             eventInfo.setTextSize(20);
             eventInfo.setPadding(10, 10, 10, 10);
             eventInfo.setBackgroundColor(Color.parseColor("#95AB63"));
@@ -118,17 +127,19 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 getApplicationContext(), Arrays.asList(SCOPES))
                 .setBackOff(new ExponentialBackOff());
 
+
+
     }
 
     public void populateArrays(ArrayList<FoodEvent> arrayList){
         int i = 0;
-        Iterator<FoodEvent> iter = foodEvents.iterator();
+        Iterator<FoodEvent> iter = arrayList.iterator();
         while(iter.hasNext()){
             FoodEvent fe = iter.next();
             String title = fe.getTitle();
             String loc = fe.getLoc();
             String info = title + " " + loc;
-            infoArray[i] = info;
+            infoArray.add(info);
             i++;
         }
     }

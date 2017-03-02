@@ -70,7 +70,7 @@ public class  EmailActivity extends Activity
     static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
     static final int REQUEST_PERMISSION_GET_ACCOUNTS = 1003;
 
-    private static final String BUTTON_TEXT = "Call Gmail API";
+    private static final String BUTTON_TEXT = "Get Food Data";
     private static final String PREF_ACCOUNT_NAME = "accountName";
     private static final String[ ] SCOPES = { GmailScopes.GMAIL_LABELS, GmailScopes.GMAIL_COMPOSE,
             GmailScopes.GMAIL_INSERT, GmailScopes.GMAIL_MODIFY, GmailScopes.GMAIL_READONLY, GmailScopes.MAIL_GOOGLE_COM };
@@ -98,6 +98,8 @@ public class  EmailActivity extends Activity
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
 
+        foodEvents = new ArrayList<>();
+
         mCallApiButton = new Button(this);
         mCallApiButton.setText(BUTTON_TEXT);
         mCallApiButton.setOnClickListener(new View.OnClickListener() {
@@ -108,6 +110,7 @@ public class  EmailActivity extends Activity
                 getResultsFromApi();
                 mCallApiButton.setEnabled(true);
             }
+
         });
         activityLayout.addView(mCallApiButton);
 
@@ -117,6 +120,7 @@ public class  EmailActivity extends Activity
         myButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                System.out.println(foodEvents.size());
                 Intent intent = new Intent(EmailActivity.this, MainActivity.class);
                 intent.putExtra("foodEvents", foodEvents);
                 startActivity(intent);
@@ -393,7 +397,7 @@ public class  EmailActivity extends Activity
             for (Label label : listResponse.getLabels()) {
                 labels.add(label.getName());
             }
-            listMessagesMatchingQuery(mService,"me","food after:2017/02/15");
+            listMessagesMatchingQuery(mService,"me","food after:2016/08/1");
             return labels;
         }
 
@@ -454,11 +458,14 @@ public class  EmailActivity extends Activity
             for (Message m : messages) {
                 String messageId = m.getId();
                 Message currentMessage = service.users().messages().get(userId, messageId).execute();
+                System.out.println(currentMessage.getPayload().getBody().getData());
                 if(currentMessage.getPayload().getBody().getData() != null) {
                     String stupidHTML = StringUtils.newStringUtf8(Base64.decodeBase64(currentMessage.getPayload().getBody().getData()));
+                    System.out.println(html2text(stupidHTML));
                     FoodEvent foodEvent = FeedNLP.processEmail(html2text(stupidHTML));
                     if (foodEvent != null){
                         foodEvents.add(foodEvent);
+                        System.out.println("JUST ADDED A FOOD EVENT TO THE ARRAY LIST");
                     }
                 }
 
