@@ -76,7 +76,7 @@ public class  EmailActivity extends Activity
             GmailScopes.GMAIL_INSERT, GmailScopes.GMAIL_MODIFY, GmailScopes.GMAIL_READONLY, GmailScopes.MAIL_GOOGLE_COM };
 
     private Message messages;
-    ArrayList<FoodEvent> foodEvents;
+    public ArrayList<FoodEvent> foodEvents;
 
 
     /**
@@ -453,31 +453,14 @@ public class  EmailActivity extends Activity
 
             for (Message m : messages) {
                 String messageId = m.getId();
-
-
                 Message currentMessage = service.users().messages().get(userId, messageId).execute();
-                //MessagePart part = currentMessage.getPayload();
-                //System.out.println(StringUtils.newStringUtf8(Base64.decodeBase64(currentMessage.getPayload().getBody().getData())));
-//                foodEvents = new ArrayList<>();
                 if(currentMessage.getPayload().getBody().getData() != null) {
                     String stupidHTML = StringUtils.newStringUtf8(Base64.decodeBase64(currentMessage.getPayload().getBody().getData()));
-                    //System.out.println(html2text(stupidHTML));
                     FoodEvent foodEvent = FeedNLP.processEmail(html2text(stupidHTML));
                     if (foodEvent != null){
                         foodEvents.add(foodEvent);
                     }
                 }
-//
-//                Base64 base64Url = new Base64(true);
-//                byte[] emailBytes = base64Url.decodeBase64(message.getRaw());
-//                Properties props = new Properties();
-//                Session session = Session.getDefaultInstance(props, null);
-//                MimeMessage email = new MimeMessage(session, new ByteArrayInputStream(emailBytes));
-
-//                Log.d("CURRENT-MESSAGE",currentMessage.getPayload().getBody().getData());
-//                System.out.println(StringUtils.newStringUtf8(Base64.decodeBase64(currentMessage.getPayload().getBody().getData())));
-//
-//                Log.d("EMAIL-DEBUG",body);
 
             }
         }
