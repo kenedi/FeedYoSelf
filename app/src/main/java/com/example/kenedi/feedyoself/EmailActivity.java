@@ -62,7 +62,6 @@ public class EmailActivity extends Activity
     private static final String PREF_ACCOUNT_NAME = "accountName";
     private static final String[] SCOPES = { GmailScopes.GMAIL_LABELS };
 
-    private com.google.api.services.gmail.Gmail mService;
 
     /**
      * Create the main activity.
@@ -130,29 +129,6 @@ public class EmailActivity extends Activity
 
 
     }
-
-    public static void listMessagesMatchingQuery(Gmail service, String userId,
-      String query) throws IOException {
-    ListMessagesResponse response = service.users().messages().list(userId).setQ(query).execute();
-
-    List<Message> messages = new ArrayList<Message>();
-    while (response.getMessages() != null) {
-      messages.addAll(response.getMessages());
-      if (response.getNextPageToken() != null) {
-        String pageToken = response.getNextPageToken();
-        response = service.users().messages().list(userId).setQ(query)
-            .setPageToken(pageToken).execute();
-      } else {
-        break;
-      }
-    }
-
-    for (Message message : messages) {
-      System.out.println(message.toPrettyString());
-    }
-
-    //return messages;
-  }
 
 
 
@@ -359,7 +335,7 @@ public class EmailActivity extends Activity
      * Placing the API calls in their own task ensures the UI stays responsive.
      */
     private class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
-        mService = null;
+        private com.google.api.services.gmail.Gmail mService = null;
         private Exception mLastError = null;
 
         MakeRequestTask(GoogleAccountCredential credential) {
@@ -441,5 +417,26 @@ public class EmailActivity extends Activity
                 mOutputText.setText("Request cancelled.");
             }
         }
+
+        private static void listMessagesMatchingQuery(Gmail service, String userId, String query) throws IOException {
+            ListMessagesResponse response = service.users().messages().list(userId).setQ(query).execute();
+
+            List<Message> messages = new ArrayList<Message>();
+            while (response.getMessages() != null) {
+              messages.addAll(response.getMessages());
+              if (response.getNextPageToken() != null) {
+                String pageToken = response.getNextPageToken();
+                response = service.users().messages().list(userId).setQ(query).setPageToken(pageToken).execute();
+              } else {
+                break;
+              }
+            }
+
+    for (Message message : messages) {
+      Log.d("EMAIL-DEBUG",message.toPrettyString());
+    }
+
+    //return messages;
+  }
     }
 }
