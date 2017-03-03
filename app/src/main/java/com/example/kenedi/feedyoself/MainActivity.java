@@ -192,10 +192,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         startActivity(intent);
     }
 
-    public void sendMessage2(View view) {
-        Intent intent = new Intent(MainActivity.this, FeedYoSelfLogIn.class);
-        startActivity(intent);
-    }
 
     /**
      * Attempt to call the API, after verifying that all the preconditions are
