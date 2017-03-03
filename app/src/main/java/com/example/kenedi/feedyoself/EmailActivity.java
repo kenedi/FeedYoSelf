@@ -45,6 +45,7 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Properties;
 
@@ -58,6 +59,7 @@ import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 import android.text.Html;
+import android.widget.Toast;
 
 public class  EmailActivity extends Activity
         implements EasyPermissions.PermissionCallbacks {
@@ -428,10 +430,11 @@ public class  EmailActivity extends Activity
             for (Label label : listResponse.getLabels()) {
                 labels.add(label.getName());
             }
-            listMessagesMatchingQuery(mService,"me","after:2017/02/26"); // food after:
-
-            mButton.setBackgroundColor(Color.parseColor("#BFBCB8"));
-            cButton.setBackgroundColor(Color.parseColor("#BFBCB8"));
+            Calendar date = Calendar.getInstance();
+            date.add(Calendar.DATE, -6);
+            String query = "after:" + date.get(Calendar.YEAR) + "/" + (date.get(Calendar.MONTH) + 1) + "/" + date.get(Calendar.DAY_OF_MONTH); //"after:2017/02/25"
+            System.out.println("query: " + query);
+            listMessagesMatchingQuery(mService, "me", query);
             return labels;
         }
 
@@ -447,10 +450,14 @@ public class  EmailActivity extends Activity
             mProgress.hide();
             if (output == null || output.size() == 0) {
                 mOutputText.setText("No results returned.");
-            } else {
+            }
+            else {
                 output.add(0, "Data retrieved using the Gmail API:");
                 mOutputText.setText(TextUtils.join("\n", output));
             }
+            mButton.setBackgroundColor(Color.parseColor("#BFBCB8"));
+            cButton.setBackgroundColor(Color.parseColor("#BFBCB8"));
+            Toast.makeText(getApplicationContext(), "Download and parse successful", Toast.LENGTH_SHORT).show();
         }
 
         @Override

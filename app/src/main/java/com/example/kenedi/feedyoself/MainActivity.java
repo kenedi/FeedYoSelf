@@ -38,6 +38,7 @@ import com.google.api.services.gmail.model.ListLabelsResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -48,7 +49,7 @@ import pub.devrel.easypermissions.EasyPermissions;
 
 public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks {
 
-    private static final String TAG = "FeedYoSelf";
+//    private static final String TAG = "FeedYoSelf";
 
     //String[] infoArray = {"One", "Two", "Three", "Four"};
     ArrayList<String> infoArray;
@@ -68,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
     static final int REQUEST_PERMISSION_GET_ACCOUNTS = 1003;
 
-    private static final String BUTTON_TEXT = "Pull Food Data";
+//    private static final String BUTTON_TEXT = "Pull Food Data";
     private static final String PREF_ACCOUNT_NAME = "accountName";
     private static final String[] SCOPES = {GmailScopes.GMAIL_LABELS};
     private ArrayList<FoodEvent> foodEvents;
@@ -89,17 +90,19 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 //
 //        }
 
-        infoArray = new ArrayList<>();
-        timeArray = new ArrayList<>();
-        populateInfo(foodEvents);
-        populateTime(foodEvents);
+//        infoArray = new ArrayList<>();
+//        timeArray = new ArrayList<>();
+//        populateInfo(foodEvents);
+//        populateTime(foodEvents);
 //        System.out.println(foodEvents.size());
 
         //Iterator<String> iter = infoArray.iterator();
 //        System.out.println("I AM ABOVE THE WHILE LOOP");
         //while(iter.hasNext()){
 
-        for(int i = 0; i <infoArray.size(); i++){
+        Collections.reverse(foodEvents);
+
+        for(FoodEvent event : foodEvents){
 //            System.out.println("I AM IN THE WHILE LOOP");
             //String info = iter.next();
 //            if (dateArray[i] != day) {
@@ -119,11 +122,16 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             TextView eventInfo = new TextView(this);
             TextView eventTime = new TextView(this);
 
-            eventTime.setText(timeArray.get(i));
+            Date date = event.getDate();
+            String time = date == null ? "N/A" : date.getHours() + ":" + date.getMinutes();
+            String title = event.getTitle() == null ? "FoodEvent" : event.getTitle();
+            String loc = event.getLoc() == null ? "" : "@ " + event.getLoc();
+
+            eventTime.setText(time); // timeArray.get(i)
             eventTime.setTextSize(15);
             eventTime.setPadding(20, 30, 30, 30);
 
-            eventInfo.setText(infoArray.get(i));
+            eventInfo.setText(title + loc); // infoArray.get(i)
             eventInfo.setTextSize(20);
             eventInfo.setPadding(10, 10, 10, 10);
             eventInfo.setBackgroundColor(Color.parseColor("#F26716"));
@@ -142,30 +150,34 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
     }
 
-    public void populateInfo(ArrayList<FoodEvent> arrayList){
-       Iterator<FoodEvent> iter = arrayList.iterator();
-        while(iter.hasNext()){
-            FoodEvent fe = iter.next();
-            String title = fe.getTitle();
-            String loc = fe.getLoc();
-            String info = title + " " + loc;
-            infoArray.add(info);
-        }
-    }
+//    public void populateInfo(ArrayList<FoodEvent> arrayList){
+//       Iterator<FoodEvent> iter = arrayList.iterator();
+//        while(iter.hasNext()){
+//            FoodEvent fe = iter.next();
+//            String title = fe.getTitle();
+//            String loc = fe.getLoc();
+//            String info = title + " " + loc;
+//            infoArray.add(info);
+//        }
+//    }
 
-    public void populateTime(ArrayList<FoodEvent> arrayList){
-        Iterator<FoodEvent> iter = arrayList.iterator();
-        while(iter.hasNext()){
-            FoodEvent fe = iter.next();
-            Date date = fe.getDate();
-            int hr = date.getHours();
-            int mn = date.getMinutes();
-
-            String time = hr + ":" + mn;
-
-            timeArray.add(time);
-        }
-    }
+//    public void populateTime(ArrayList<FoodEvent> arrayList){
+//        Iterator<FoodEvent> iter = arrayList.iterator();
+//        while(iter.hasNext()){
+//            FoodEvent fe = iter.next();
+//            Date date = fe.getDate();
+//            String time = "";
+//            if (date == null) {
+//                time = "N/A";
+//            }
+//            else {
+//                int hr = date.getHours();
+//                int mn = date.getMinutes();
+//                time = hr + ":" + mn;
+//            }
+//            timeArray.add(time);
+//        }
+//    }
 
     public void sendMessage(View view) {
         Intent intent = new Intent(MainActivity.this, FeedYoSelfMap.class);

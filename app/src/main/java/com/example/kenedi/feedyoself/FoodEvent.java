@@ -37,9 +37,9 @@ public class FoodEvent implements Serializable, Comparable<FoodEvent>{
 
     public Date getDate() { return this.date; }
 
-    public String prettyPrint(){
-        return getTitle() + " " + getLoc() + " " + date.toString();
-    }
+//    public String prettyPrint(){
+//        return getTitle() + " " + getLoc() + " " + date.toString();
+//    }
 
     @Override
     public int compareTo(FoodEvent o) {
@@ -48,15 +48,15 @@ public class FoodEvent implements Serializable, Comparable<FoodEvent>{
             answer = 0;
         }
         else if (this.date == null) {
-            answer = -1;
+            answer = 1;
         }
         else if (o.date == null) {
-            answer = 1;
+            answer = -1;
         }
         else {
             int thisTime = this.date.getHours() * 60 + this.date.getMinutes();
             int otherTime = o.date.getHours() * 60 + o.date.getMinutes();
-            answer = thisTime - otherTime; // assumes no overflow
+            answer = otherTime - thisTime; // assumes no overflow
         }
         return answer;
     }

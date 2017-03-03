@@ -30,14 +30,14 @@
                 android:layout_height="40dp">
 
                 <TextView
-                    android:text="This Week"
+                    android:text="@string/food_today"
                     android:layout_width="185dp"
                     android:layout_height="wrap_content"
                     android:id="@+id/thisWeek"
                     android:textSize="36sp" />
 
                 <TextView
-                    android:text="Go To Map"
+                    android:text="@string/map"
                     android:layout_width="wrap_content"
                     android:id="@+id/textView4"
                     android:layout_row="0"
