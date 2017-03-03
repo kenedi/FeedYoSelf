@@ -71,8 +71,7 @@ import android.text.Html;
 import android.widget.Toast;
 
 public class EmailActivity extends Activity implements EasyPermissions.PermissionCallbacks,
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener
-{
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     GoogleAccountCredential mCredential;
     private TextView mOutputText;
     private Button mCallApiButton;
@@ -95,6 +94,7 @@ public class EmailActivity extends Activity implements EasyPermissions.Permissio
     public ArrayList<FoodEvent> foodEvents;
 
     private GoogleApiClient mGoogleApiClient;
+    private final int LOCATION_CODE = 1337 + 3;
 
 
     /**
@@ -217,23 +217,8 @@ public class EmailActivity extends Activity implements EasyPermissions.Permissio
         System.out.println("Connection failed.");
     }
 
-    @Override
-    public void onConnected(Bundle connectionHint) {
-        Location mLastLocation;
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            System.out.println("Location API: No location permission.");
-            return;
-        }
-        System.out.println("Location API: Has location permission.");
-        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                mGoogleApiClient);
+    private void toastCurrentLocation(Location mLastLocation) {
+
         if (mLastLocation != null) {
             System.out.println(String.valueOf(mLastLocation.getLatitude()));
             System.out.println(String.valueOf(mLastLocation.getLongitude()));
@@ -248,6 +233,34 @@ public class EmailActivity extends Activity implements EasyPermissions.Permissio
         target.setLongitude(fullerLabs.longitude);
         float distanceToFuller = mLastLocation.distanceTo(target);
         Toast.makeText(getApplicationContext(), "Distance to WPI: " + distanceToFuller / 1000 + "km", Toast.LENGTH_SHORT).show();
+
+    }
+
+
+
+    @Override
+    public void onConnected(Bundle connectionHint) {
+
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            System.out.println("Location API: No location permission, requesting:");
+//            return;
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    LOCATION_CODE);
+        }
+        else {
+            Location mLastLocation;
+            System.out.println("Location API: Has location permission.");
+            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            toastCurrentLocation(mLastLocation);
+        }
     }
 
     @Override
@@ -383,6 +396,40 @@ public class EmailActivity extends Activity implements EasyPermissions.Permissio
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         EasyPermissions.onRequestPermissionsResult(
                 requestCode, permissions, grantResults, this);
+        switch (requestCode) {
+            case LOCATION_CODE: {
+//                // If request is cancelled, the result arrays are empty.
+//                if (grantResults.length > 0
+//                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//
+//                    // permission was granted, yay! Do the
+//                    // contacts-related task you need to do.
+//
+//                } else {
+//
+//                    // permission denied, boo! Disable the
+//                    // functionality that depends on this permission.
+//                }
+//                return;
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    System.out.println("onRequestPermissionsResult: No location permission, requesting:");
+                    return;
+                }
+                System.out.println("onRequestPermissionsResult: permission granted!");
+                Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+                toastCurrentLocation(mLastLocation);
+            }
+        }
+
+            // other 'case' lines to check for other
+            // permissions this app might request
     }
 
     /**
