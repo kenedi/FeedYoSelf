@@ -38,6 +38,7 @@ import com.google.api.services.gmail.model.ListLabelsResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -81,6 +82,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         LinearLayout mainLayout = (LinearLayout) findViewById(R.id.ll);
 
         foodEvents = (ArrayList<FoodEvent>) getIntent().getSerializableExtra("foodEvents");
+        Collections.sort(foodEvents);
 
 //        for (FoodEvent event : foodEvents){
 //

@@ -7,7 +7,7 @@ import java.util.Date;
  * Created by nicholasbradford on 2/22/17.
  */
 
-public class FoodEvent implements Serializable{
+public class FoodEvent implements Serializable, Comparable<FoodEvent>{
 
     String tile;
     String location;
@@ -37,5 +37,12 @@ public class FoodEvent implements Serializable{
 
     public String prettyPrint(){
         return getTitle() + " " + getLoc() + " " + date.toString();
+    }
+
+    @Override
+    public int compareTo(FoodEvent o) {
+        int thisTime = this.date.getHours() * 60 + this.date.getMinutes();
+        int otherTime = o.date.getHours() * 60 + o.date.getMinutes();
+        return thisTime - otherTime; // assumes no overflow
     }
 }
