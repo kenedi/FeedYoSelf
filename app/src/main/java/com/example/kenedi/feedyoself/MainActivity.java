@@ -127,6 +127,10 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             String title = event.getTitle() == null ? "FoodEvent" : event.getTitle();
             String loc = event.getLoc() == null ? "" : "@ " + event.getLoc();
 
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            params.setMargins(0, 30, 0, 0);
+
             eventTime.setText(time); // timeArray.get(i)
             eventTime.setTextSize(20);
             eventTime.setWidth(150);
@@ -134,9 +138,10 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
             eventInfo.setText(title + loc); // infoArray.get(i)
             eventInfo.setTextSize(25);
-            eventInfo.setWidth(600);
             eventInfo.setPadding(20, 20, 20, 20);
             eventInfo.setBackgroundColor(Color.parseColor("#F29D35"));
+
+            eventInfo.setLayoutParams(params);
 
             b.addView(eventTime);
             b.addView(eventInfo);
