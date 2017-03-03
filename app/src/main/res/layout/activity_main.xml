@@ -32,9 +32,11 @@
                 <TextView
                     android:text="@string/food_today"
                     android:layout_width="185dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="56dp"
                     android:id="@+id/thisWeek"
-                    android:textSize="36sp" />
+                    android:textSize="36sp"
+                    android:textColor="#F26716"
+                    android:layout_weight="0.52" />
 
                 <TextView
                     android:text="@string/map"
@@ -45,7 +47,7 @@
                     android:layout_gravity="right"
                     android:gravity="right"
                     android:layout_height="50dp"
-                    android:layout_weight="1" />
+                    android:layout_weight="0.18" />
 
                 <ImageButton
                     android:layout_width="wrap_content"
@@ -62,3 +64,4 @@
     </ScrollView>
 
 </RelativeLayout>
+

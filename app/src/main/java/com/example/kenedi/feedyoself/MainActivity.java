@@ -133,8 +133,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
             eventInfo.setText(title + loc); // infoArray.get(i)
             eventInfo.setTextSize(20);
+            eventInfo.setWidth(600);
             eventInfo.setPadding(10, 10, 10, 10);
-            eventInfo.setBackgroundColor(Color.parseColor("#F26716"));
+            eventInfo.setBackgroundColor(Color.parseColor("#F29D35"));
 
             b.addView(eventTime);
             b.addView(eventInfo);

@@ -117,11 +117,12 @@ public class EmailActivity extends Activity implements EasyPermissions.Permissio
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
 
+
         foodEvents = new ArrayList<>();
 
         appTitle = new TextView(this);
         appTitle.setText("FeedYoSelf");
-        appTitle.setBackgroundColor(Color.parseColor("#F26716"));
+        appTitle.setTextColor(Color.parseColor("#F26716"));
         appTitle.setGravity(View.TEXT_ALIGNMENT_GRAVITY);
         appTitle.setTextSize(50);
 
@@ -144,7 +145,7 @@ public class EmailActivity extends Activity implements EasyPermissions.Permissio
 
         cButton = new Button(this);
         cButton.setText("View Calendar");
-        cButton.setBackgroundColor(Color.parseColor("#403F3D"));
+        cButton.setBackgroundColor(Color.parseColor("#646464"));
         cButton.setPadding(10, 10, 10, 10);
         activityLayout.addView(cButton);
         cButton.setOnClickListener(new View.OnClickListener() {
@@ -159,7 +160,7 @@ public class EmailActivity extends Activity implements EasyPermissions.Permissio
 
         mButton = new Button(this);
         mButton.setText("View Map");
-        mButton.setBackgroundColor(Color.parseColor("#403F3D"));
+        mButton.setBackgroundColor(Color.parseColor("#646464"));
         mButton.setPadding(10, 10, 10, 10);
         activityLayout.addView(mButton);
         mButton.setOnClickListener(new View.OnClickListener() {
@@ -172,6 +173,14 @@ public class EmailActivity extends Activity implements EasyPermissions.Permissio
             }
         });
 
+
+        LinearLayout.LayoutParams bParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        bParams.setMargins(0, 50, 0, 0);
+        mButton.setLayoutParams(bParams);
+        cButton.setLayoutParams(bParams);
+        mCallApiButton.setLayoutParams(bParams);
+        appTitle.setLayoutParams(bParams);
 
         mOutputText = new TextView(this);
         mOutputText.setLayoutParams(tlp);
