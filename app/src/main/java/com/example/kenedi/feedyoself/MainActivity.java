@@ -151,6 +151,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     }
     public void sendMessage(View view) {
         Intent intent = new Intent(MainActivity.this, FeedYoSelfMap.class);
+        intent.putExtra("foodEvents", foodEvents);
         startActivity(intent);
     }
 
