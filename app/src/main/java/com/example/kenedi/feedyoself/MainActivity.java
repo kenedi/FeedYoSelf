@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        foodEvents = (ArrayList<FoodEvent>) getIntent().getSerializableExtra("foodEvents");
 
         setContentView(R.layout.activity_main);
         //ScrollView mainView = (ScrollView) findViewById(R.id.scroll);

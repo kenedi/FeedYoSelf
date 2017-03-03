@@ -397,7 +397,8 @@ public class  EmailActivity extends Activity
             for (Label label : listResponse.getLabels()) {
                 labels.add(label.getName());
             }
-            listMessagesMatchingQuery(mService,"me","food after:2017/01/1");
+            listMessagesMatchingQuery(mService,"me","after:2017/02/26"); // food after:
+
             return labels;
         }
 
@@ -453,23 +454,37 @@ public class  EmailActivity extends Activity
               }
             }
 
+            extractFoodEventsFromMessages(service, userId);
+        }
 
-
+        private void extractFoodEventsFromMessages(Gmail service, String userId) throws IOException {
             for (Message m : messages) {
                 String messageId = m.getId();
                 Message currentMessage = service.users().messages().get(userId, messageId).execute();
-                //System.out.println(currentMessage.getPayload().getBody().getData());
-                if(currentMessage.getPayload().getBody().getData() != null) {
-                    String stupidHTML = StringUtils.newStringUtf8(Base64.decodeBase64(currentMessage.getPayload().getBody().getData()));
-                    System.out.println(html2text(stupidHTML));
-                    FoodEvent foodEvent = FeedNLP.processEmail(html2text(stupidHTML));
-                    if (foodEvent != null){
-                        foodEvents.add(foodEvent);
-                        System.out.println("JUST ADDED A FOOD EVENT TO THE ARRAY LIST");
-                    }
-                }
-
+                addFoodEventToList(currentMessage);
             }
+        }
+
+        private void addFoodEventToList(Message message) {
+
+
+            //System.out.println(currentMessage.getPayload().getBody().getData());
+            if(message.getPayload().getBody().getData() != null) {
+                String text = getMessageBody(message);
+                FoodEvent foodEvent = FeedNLP.processEmail(text);
+
+                if (foodEvent != null){
+                    foodEvents.add(foodEvent);
+                    System.out.println("JUST ADDED A FOOD EVENT TO THE ARRAY LIST:" +
+                            foodEvent.getTitle() + " " + foodEvent.getLoc());
+                    System.out.println("\t" + text);
+
+                }
+            }
+        }
+
+        private String getMessageBody(Message currentMessage) {
+            return html2text(StringUtils.newStringUtf8(Base64.decodeBase64(currentMessage.getPayload().getBody().getData())));
         }
 
         public String html2text(String html) {
