@@ -17,12 +17,33 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 public class FeedYoSelfMap extends FragmentActivity implements OnMapReadyCallback, LocationListener {
+
+    private static LatLng atwaterKent = new LatLng(42.275244, -71.806956);
+    private static LatLng fullerLabs = new LatLng(42.274953, -71.806135);
+    private static LatLng salisburyLabs = new LatLng(42.274497, -71.807011);
+    private static LatLng campusCenter = new LatLng(42.274725, -71.808419);
+    private static HashMap<String, LatLng> LOCATIONS = initializeLocationHashmap();
+
 
     private GoogleMap mMap;
     private static final long MIN_TIME = 400;
     private static final float MIN_DISTANCE = 1000;
     private LocationManager locationManager;
+    private ArrayList<FoodEvent> foodEvents;
+
+    private static HashMap<String, LatLng> initializeLocationHashmap() {
+        HashMap<String, LatLng> locations = new HashMap<>();
+        locations.put("Atwater Kent", atwaterKent);
+        locations.put("Fuller Labs", fullerLabs);
+        locations.put("Salisbury Labs", salisburyLabs);
+        locations.put("Campus Center", campusCenter);
+        return locations;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +71,7 @@ public class FeedYoSelfMap extends FragmentActivity implements OnMapReadyCallbac
         }
         System.out.println("request location updates");
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME, MIN_DISTANCE, this);
+        foodEvents = (ArrayList<FoodEvent>) getIntent().getSerializableExtra("foodEvents");
     }
 
 
@@ -71,10 +93,22 @@ public class FeedYoSelfMap extends FragmentActivity implements OnMapReadyCallbac
 //        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
 //        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
 
-        LatLng fullerLabs = new LatLng(42.274953, -71.806135);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(fullerLabs));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(20));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(16.5f));
         System.out.println("moved marker to fuller labs");
+        addEventMarkers(mMap, LOCATIONS, foodEvents);
+    }
+
+    private static void addEventMarkers(GoogleMap map, HashMap<String, LatLng> locations,
+                                        ArrayList<FoodEvent> foodEvents;)
+    {
+        for (FoodEvent foodEvent : foodEvents) {
+            if (foodEvent.getLoc() != null && locations.containsKey(foodEvent.getLoc())){
+                LatLng latlng = locations.get(foodEvent.getLoc());
+                map.addMarker(new MarkerOptions().position(latlng).title("Marker in Sydney"));
+            }
+
+        }
     }
 
     @Override
