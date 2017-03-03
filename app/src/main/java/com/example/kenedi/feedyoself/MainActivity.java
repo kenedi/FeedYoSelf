@@ -38,7 +38,7 @@ import com.google.api.services.gmail.model.ListLabelsResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -53,7 +53,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     //String[] infoArray = {"One", "Two", "Three", "Four"};
     ArrayList<String> infoArray;
     //int[] dateArray = {1, 2, 2, 3};
-    String[] timeArray = {"1:00 - 2:00", "11:00 - 2:00", "4:00 - 5:00", "8:00 - 9:00"};
+    ArrayList<String> timeArray;
+
+    //String[] timeArray = {"1:00 - 2:00", "11:00 - 2:00", "4:00 - 5:00", "8:00 - 9:00"};
     int day = 0;
 
     GoogleAccountCredential mCredential;
@@ -82,21 +84,24 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         LinearLayout mainLayout = (LinearLayout) findViewById(R.id.ll);
 
         foodEvents = (ArrayList<FoodEvent>) getIntent().getSerializableExtra("foodEvents");
-//        Collections.sort(foodEvents);
 
 //        for (FoodEvent event : foodEvents){
 //
 //        }
 
         infoArray = new ArrayList<>();
-        populateArrays(foodEvents);
+        timeArray = new ArrayList<>();
+        populateInfo(foodEvents);
+        populateTime(foodEvents);
 //        System.out.println(foodEvents.size());
 
-        Iterator<String> iter = infoArray.iterator();
+        //Iterator<String> iter = infoArray.iterator();
 //        System.out.println("I AM ABOVE THE WHILE LOOP");
-        while(iter.hasNext()){
+        //while(iter.hasNext()){
+
+        for(int i = 0; i <infoArray.size(); i++){
 //            System.out.println("I AM IN THE WHILE LOOP");
-            String info = iter.next();
+            //String info = iter.next();
 //            if (dateArray[i] != day) {
 //                day = dateArray[i];
 //                LinearLayout a = new LinearLayout(this);
@@ -114,14 +119,14 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             TextView eventInfo = new TextView(this);
             TextView eventTime = new TextView(this);
 
-//            eventTime.setText(timeArray[i]);
-//            eventTime.setTextSize(15);
-//            eventTime.setPadding(20, 30, 30, 30);
+            eventTime.setText(timeArray.get(i));
+            eventTime.setTextSize(15);
+            eventTime.setPadding(20, 30, 30, 30);
 
-            eventInfo.setText(info);
+            eventInfo.setText(infoArray.get(i));
             eventInfo.setTextSize(20);
             eventInfo.setPadding(10, 10, 10, 10);
-            eventInfo.setBackgroundColor(Color.parseColor("#95AB63"));
+            eventInfo.setBackgroundColor(Color.parseColor("#F26716"));
 
             b.addView(eventTime);
             b.addView(eventInfo);
@@ -137,18 +142,31 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
     }
 
-    public void populateArrays(ArrayList<FoodEvent> arrayList){
-        int i = 0;
-        Iterator<FoodEvent> iter = arrayList.iterator();
+    public void populateInfo(ArrayList<FoodEvent> arrayList){
+       Iterator<FoodEvent> iter = arrayList.iterator();
         while(iter.hasNext()){
             FoodEvent fe = iter.next();
             String title = fe.getTitle();
             String loc = fe.getLoc();
             String info = title + " " + loc;
             infoArray.add(info);
-            i++;
         }
     }
+
+    public void populateTime(ArrayList<FoodEvent> arrayList){
+        Iterator<FoodEvent> iter = arrayList.iterator();
+        while(iter.hasNext()){
+            FoodEvent fe = iter.next();
+            Date date = fe.getDate();
+            int hr = date.getHours();
+            int mn = date.getMinutes();
+
+            String time = hr + ":" + mn;
+
+            timeArray.add(time);
+        }
+    }
+
     public void sendMessage(View view) {
         Intent intent = new Intent(MainActivity.this, FeedYoSelfMap.class);
         intent.putExtra("foodEvents", foodEvents);

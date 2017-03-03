@@ -35,6 +35,8 @@ public class FoodEvent implements Serializable, Comparable<FoodEvent>{
         return  this.location;
     }
 
+    public Date getDate() { return this.date; }
+
     public String prettyPrint(){
         return getTitle() + " " + getLoc() + " " + date.toString();
     }

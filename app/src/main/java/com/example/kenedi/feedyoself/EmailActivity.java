@@ -25,6 +25,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -63,6 +64,9 @@ public class  EmailActivity extends Activity
     GoogleAccountCredential mCredential;
     private TextView mOutputText;
     private Button mCallApiButton;
+    private Button mButton;
+    private Button cButton;
+    private TextView appTitle;
     ProgressDialog mProgress;
 
     static final int REQUEST_ACCOUNT_PICKER = 1000;
@@ -70,7 +74,7 @@ public class  EmailActivity extends Activity
     static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
     static final int REQUEST_PERMISSION_GET_ACCOUNTS = 1003;
 
-    private static final String BUTTON_TEXT = "Get Food Data";
+    private static final String BUTTON_TEXT = "log into your gmail";
     private static final String PREF_ACCOUNT_NAME = "accountName";
     private static final String[ ] SCOPES = { GmailScopes.GMAIL_LABELS, GmailScopes.GMAIL_COMPOSE,
             GmailScopes.GMAIL_INSERT, GmailScopes.GMAIL_MODIFY, GmailScopes.GMAIL_READONLY, GmailScopes.MAIL_GOOGLE_COM };
@@ -90,6 +94,7 @@ public class  EmailActivity extends Activity
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
+        lp.setMargins(10, 10, 10 , 10);
         activityLayout.setLayoutParams(lp);
         activityLayout.setOrientation(LinearLayout.VERTICAL);
         activityLayout.setPadding(16, 16, 16, 16);
@@ -100,8 +105,16 @@ public class  EmailActivity extends Activity
 
         foodEvents = new ArrayList<>();
 
+        appTitle = new TextView(this);
+        appTitle.setText("FeedYoSelf");
+        appTitle.setBackgroundColor(Color.parseColor("#F26716"));
+        appTitle.setGravity(View.TEXT_ALIGNMENT_GRAVITY);
+        appTitle.setTextSize(50);
+
+
         mCallApiButton = new Button(this);
         mCallApiButton.setText(BUTTON_TEXT);
+        mCallApiButton.setBackgroundColor(Color.parseColor("#BFBCB8"));
         mCallApiButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -112,16 +125,34 @@ public class  EmailActivity extends Activity
             }
 
         });
+        activityLayout.addView(appTitle);
         activityLayout.addView(mCallApiButton);
 
-        Button myButton = new Button(this);
-        myButton.setText("Go to FeedYoSelf");
-        activityLayout.addView(myButton);
-        myButton.setOnClickListener(new View.OnClickListener() {
+        cButton = new Button(this);
+        cButton.setText("View Calendar");
+        cButton.setBackgroundColor(Color.parseColor("#403F3D"));
+        cButton.setPadding(10, 10, 10, 10);
+        activityLayout.addView(cButton);
+        cButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 System.out.println(foodEvents.size());
                 Intent intent = new Intent(EmailActivity.this, MainActivity.class);
+                intent.putExtra("foodEvents", foodEvents);
+                startActivity(intent);
+            }
+        });
+
+        mButton = new Button(this);
+        mButton.setText("View Map");
+        mButton.setBackgroundColor(Color.parseColor("#403F3D"));
+        mButton.setPadding(10, 10, 10, 10);
+        activityLayout.addView(mButton);
+        mButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                System.out.println(foodEvents.size());
+                Intent intent = new Intent(EmailActivity.this, FeedYoSelfMap.class);
                 intent.putExtra("foodEvents", foodEvents);
                 startActivity(intent);
             }
@@ -135,7 +166,7 @@ public class  EmailActivity extends Activity
         mOutputText.setMovementMethod(new ScrollingMovementMethod());
         mOutputText.setText(
                 "Click the \'" + BUTTON_TEXT +"\' button to test the API.");
-        activityLayout.addView(mOutputText);
+        //activityLayout.addView(mOutputText);
 
         mProgress = new ProgressDialog(this);
         mProgress.setMessage("Calling Gmail API ...");
@@ -399,6 +430,8 @@ public class  EmailActivity extends Activity
             }
             listMessagesMatchingQuery(mService,"me","after:2017/02/26"); // food after:
 
+            mButton.setBackgroundColor(Color.parseColor("#BFBCB8"));
+            cButton.setBackgroundColor(Color.parseColor("#BFBCB8"));
             return labels;
         }
 
