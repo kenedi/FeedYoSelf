@@ -2,6 +2,9 @@ package com.example.kenedi.feedyoself;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException;
@@ -25,12 +28,15 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.text.TextUtils;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
@@ -51,18 +57,22 @@ import java.util.Properties;
 
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
+
 import com.google.api.client.util.Base64;
+
 import org.apache.commons.codec.binary.StringUtils;
 import org.jsoup.Jsoup;
 
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
+
 import android.text.Html;
 import android.widget.Toast;
 
-public class  EmailActivity extends Activity
-        implements EasyPermissions.PermissionCallbacks {
+public class EmailActivity extends Activity implements EasyPermissions.PermissionCallbacks,
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener
+{
     GoogleAccountCredential mCredential;
     private TextView mOutputText;
     private Button mCallApiButton;
@@ -78,11 +88,13 @@ public class  EmailActivity extends Activity
 
     private static final String BUTTON_TEXT = "log into your gmail";
     private static final String PREF_ACCOUNT_NAME = "accountName";
-    private static final String[ ] SCOPES = { GmailScopes.GMAIL_LABELS, GmailScopes.GMAIL_COMPOSE,
-            GmailScopes.GMAIL_INSERT, GmailScopes.GMAIL_MODIFY, GmailScopes.GMAIL_READONLY, GmailScopes.MAIL_GOOGLE_COM };
+    private static final String[] SCOPES = {GmailScopes.GMAIL_LABELS, GmailScopes.GMAIL_COMPOSE,
+            GmailScopes.GMAIL_INSERT, GmailScopes.GMAIL_MODIFY, GmailScopes.GMAIL_READONLY, GmailScopes.MAIL_GOOGLE_COM};
 
     private Message messages;
     public ArrayList<FoodEvent> foodEvents;
+
+    private GoogleApiClient mGoogleApiClient;
 
 
     /**
@@ -96,7 +108,7 @@ public class  EmailActivity extends Activity
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
-        lp.setMargins(10, 10, 10 , 10);
+        lp.setMargins(10, 10, 10, 10);
         activityLayout.setLayoutParams(lp);
         activityLayout.setOrientation(LinearLayout.VERTICAL);
         activityLayout.setPadding(16, 16, 16, 16);
@@ -167,7 +179,7 @@ public class  EmailActivity extends Activity
         mOutputText.setVerticalScrollBarEnabled(true);
         mOutputText.setMovementMethod(new ScrollingMovementMethod());
         mOutputText.setText(
-                "Click the \'" + BUTTON_TEXT +"\' button to test the API.");
+                "Click the \'" + BUTTON_TEXT + "\' button to test the API.");
         //activityLayout.addView(mOutputText);
 
         mProgress = new ProgressDialog(this);
@@ -180,12 +192,72 @@ public class  EmailActivity extends Activity
                 getApplicationContext(), Arrays.asList(SCOPES))
                 .setBackOff(new ExponentialBackOff());
 
-
+        // Create an instance of GoogleAPIClient.
+        if (mGoogleApiClient == null) {
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+        }
     }
 
 
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        System.out.println("Connection failed.");
+    }
 
-    /**
+    @Override
+    public void onConnected(Bundle connectionHint) {
+        Location mLastLocation;
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            System.out.println("Location API: No location permission.");
+            return;
+        }
+        System.out.println("Location API: Has location permission.");
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                mGoogleApiClient);
+        if (mLastLocation != null) {
+            System.out.println(String.valueOf(mLastLocation.getLatitude()));
+            System.out.println(String.valueOf(mLastLocation.getLongitude()));
+        }
+
+//        float[] results = new float[1];
+//        Location.distanceBetween(oldPosition.latitude, oldPosition.longitude,
+//                newPosition.latitude, newPosition.longitude, results);
+        LatLng fullerLabs = new LatLng(42.274953, -71.806135);
+        Location target = new Location("");
+        target.setLatitude(fullerLabs.latitude);
+        target.setLongitude(fullerLabs.longitude);
+        float distanceToFuller = mLastLocation.distanceTo(target);
+        Toast.makeText(getApplicationContext(), "Distance to WPI: " + distanceToFuller / 1000 + "km", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    protected void onStart() {
+        mGoogleApiClient.connect();
+        super.onStart();
+    }
+
+    protected void onStop() {
+        mGoogleApiClient.disconnect();
+        super.onStop();
+    }
+
+
+            /**
      * Attempt to call the API, after verifying that all the preconditions are
      * satisfied. The preconditions are: Google Play Services installed, an
      * account was selected and the device currently has online access. If any
@@ -432,7 +504,7 @@ public class  EmailActivity extends Activity
             }
             Calendar date = Calendar.getInstance();
             date.add(Calendar.DATE, -6);
-            String query = "after:" + date.get(Calendar.YEAR) + "/" + (date.get(Calendar.MONTH) + 1) + "/" + date.get(Calendar.DAY_OF_MONTH); //"after:2017/02/25"
+            String query = "feedyoself after:" + date.get(Calendar.YEAR) + "/" + (date.get(Calendar.MONTH) + 1) + "/" + date.get(Calendar.DAY_OF_MONTH); //"after:2017/02/25"
             System.out.println("query: " + query);
             listMessagesMatchingQuery(mService, "me", query);
             return labels;
