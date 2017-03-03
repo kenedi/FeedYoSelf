@@ -67,10 +67,14 @@ public class FeedYoSelfMap extends FragmentActivity implements OnMapReadyCallbac
         mMap = googleMap;
 
         // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-        System.out.println("moved marker to sydney");
+//        LatLng sydney = new LatLng(-34, 151);
+//        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+//        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+
+        LatLng fullerLabs = new LatLng(42.274953, -71.806135);
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(fullerLabs));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(20));
+        System.out.println("moved marker to fuller labs");
     }
 
     @Override

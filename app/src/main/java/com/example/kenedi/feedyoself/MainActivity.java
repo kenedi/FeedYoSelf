@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         LinearLayout mainLayout = (LinearLayout) findViewById(R.id.ll);
 
         foodEvents = (ArrayList<FoodEvent>) getIntent().getSerializableExtra("foodEvents");
-        Collections.sort(foodEvents);
+//        Collections.sort(foodEvents);
 
 //        for (FoodEvent event : foodEvents){
 //
